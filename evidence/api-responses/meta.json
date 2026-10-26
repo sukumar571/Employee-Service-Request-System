@@ -1,0 +1,390 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:4000/api/v1/meta"
+  },
+  "response": {
+    "status": 200,
+    "status_text": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-request-id": "32a954bf-fdd2-4f69-943c-2e4a94f11d0a",
+      "x-content-type-options": "nosniff",
+      "cache-control": null
+    },
+    "elapsed_ms": 14,
+    "body": {
+      "data": {
+        "contract_version": "1.0.0",
+        "api": {
+          "service": "esrs-api",
+          "api_version": "0.1.0",
+          "documentation": "/docs/api-specification.md"
+        },
+        "catalog": {
+          "roles": [
+            "employee",
+            "agent",
+            "manager",
+            "admin"
+          ],
+          "statuses": [
+            "draft",
+            "submitted",
+            "assigned",
+            "in_progress",
+            "on_hold",
+            "resolved",
+            "closed",
+            "cancelled"
+          ],
+          "priorities": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "actions": [
+            "submit",
+            "cancel",
+            "claim",
+            "assign",
+            "start",
+            "hold",
+            "resume",
+            "resolve",
+            "close_confirm",
+            "reopen"
+          ],
+          "sla_states": [
+            "safe",
+            "warning",
+            "breached"
+          ],
+          "comment_visibilities": [
+            "public",
+            "internal"
+          ],
+          "event_types": [
+            "created",
+            "submitted",
+            "assigned",
+            "claimed",
+            "unassigned",
+            "reassigned",
+            "started",
+            "placed_on_hold",
+            "resumed",
+            "resolved",
+            "reopened",
+            "closed",
+            "cancelled",
+            "priority_changed",
+            "comment_added",
+            "attachment_added"
+          ],
+          "notification_types": [
+            "request_status_changed",
+            "request_assigned",
+            "request_commented",
+            "request_reopened",
+            "sla_warning",
+            "sla_breach",
+            "auto_close_warning",
+            "auto_closed"
+          ]
+        },
+        "transitions": [
+          {
+            "from": "draft",
+            "action": "submit",
+            "to": "submitted",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "draft",
+            "action": "cancel",
+            "to": "cancelled",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "submitted",
+            "action": "cancel",
+            "to": "cancelled",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": true
+          },
+          {
+            "from": "submitted",
+            "action": "claim",
+            "to": "assigned",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "submitted",
+            "action": "assign",
+            "to": "assigned",
+            "roles": [
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "assigned",
+            "action": "cancel",
+            "to": "cancelled",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": true
+          },
+          {
+            "from": "assigned",
+            "action": "assign",
+            "to": "assigned",
+            "roles": [
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "assigned",
+            "action": "start",
+            "to": "in_progress",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": false
+          },
+          {
+            "from": "assigned",
+            "action": "hold",
+            "to": "on_hold",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": true
+          },
+          {
+            "from": "assigned",
+            "action": "resolve",
+            "to": "resolved",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": true
+          },
+          {
+            "from": "in_progress",
+            "action": "assign",
+            "to": "assigned",
+            "roles": [
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "in_progress",
+            "action": "hold",
+            "to": "on_hold",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": true
+          },
+          {
+            "from": "in_progress",
+            "action": "resolve",
+            "to": "resolved",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": true
+          },
+          {
+            "from": "on_hold",
+            "action": "assign",
+            "to": "assigned",
+            "roles": [
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "on_hold",
+            "action": "resume",
+            "to": "in_progress",
+            "roles": [
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": false,
+            "assignee_only": true,
+            "managers_bypass": true,
+            "reason_required": false
+          },
+          {
+            "from": "resolved",
+            "action": "close_confirm",
+            "to": "closed",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": false
+          },
+          {
+            "from": "resolved",
+            "action": "reopen",
+            "to": "assigned",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": true
+          },
+          {
+            "from": "closed",
+            "action": "reopen",
+            "to": "assigned",
+            "roles": [
+              "employee",
+              "agent",
+              "manager",
+              "admin"
+            ],
+            "requester_only": true,
+            "assignee_only": false,
+            "managers_bypass": false,
+            "reason_required": true
+          }
+        ],
+        "sla": {
+          "business_hours": {
+            "days": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "start": "09:00",
+            "end": "18:00",
+            "timezone": "Asia/Kolkata"
+          },
+          "warning_ratio": 0.75,
+          "default_policies": {
+            "critical": {
+              "first_response_minutes": 30,
+              "resolution_minutes": 240
+            },
+            "high": {
+              "first_response_minutes": 120,
+              "resolution_minutes": 1440
+            },
+            "medium": {
+              "first_response_minutes": 240,
+              "resolution_minutes": 1620
+            },
+            "low": {
+              "first_response_minutes": 480,
+              "resolution_minutes": 2700
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+/**
+ * Design tokens (ADR-001: Tailwind over hand-written CSS).
+ * Status and priority colours are the single palette the badges, queue rows and analytics charts
+ * use, chosen so the text/background pair reaches WCAG AA contrast (docs/requirements.md NFR-8).
+ */
+@theme {
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --color-ink: #0f172a;
+  --color-ink-muted: #475569;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-brand: #1d4ed8;
+  --color-brand-dark: #1e40af;
+
+  /* Lifecycle statuses — one hue family per stage keeps queues scannable. */
+  --color-status-draft: #64748b;
+  --color-status-submitted: #1d4ed8;
+  --color-status-assigned: #0e7490;
+  --color-status-in-progress: #6d28d9;
+  --color-status-on-hold: #b45309;
+  --color-status-resolved: #047857;
+  --color-status-closed: #334155;
+  --color-status-cancelled: #9f1239;
+
+  /* Priorities. */
+  --color-priority-low: #475569;
+  --color-priority-medium: #0369a1;
+  --color-priority-high: #b45309;
+  --color-priority-critical: #b91c1c;
+
+  /* Derived SLA urgency. */
+  --color-sla-safe: #047857;
+  --color-sla-warning: #b45309;
+  --color-sla-breached: #b91c1c;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
+  /* Visible keyboard focus everywhere (NFR-8). */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-border bg-surface shadow-sm;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-dark;
+  }
+
+  .field {
+    @apply w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-ink shadow-sm focus:border-brand focus:outline-none;
+  }
+
+  .label {
+    @apply mb-1 block text-sm font-medium text-ink;
+  }
+}

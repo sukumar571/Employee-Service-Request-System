@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:4000/api/v1/health/ready"
+  },
+  "response": {
+    "status": 200,
+    "status_text": "OK",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-request-id": "a62aecab-3fa2-4d31-a591-b591037564a7",
+      "x-content-type-options": "nosniff",
+      "cache-control": null
+    },
+    "elapsed_ms": 14,
+    "body": {
+      "data": {
+        "status": "degraded",
+        "service": "esrs-api",
+        "version": "0.1.0",
+        "environment": "development",
+        "uptime_seconds": 1350,
+        "timestamp": "2026-10-25T11:10:04.459Z",
+        "database": {
+          "state": "not_configured"
+        }
+      }
+    }
+  }
+}

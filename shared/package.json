@@ -1,0 +1,33 @@
+{
+  "name": "@esrs/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ESRS contract package: enums, error codes, Zod schemas and DTOs shared by backend and frontend",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^5.0.5",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.5"
+  }
+}

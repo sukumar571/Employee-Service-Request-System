@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:4000/api/v1/sla/policies"
+  },
+  "response": {
+    "status": 401,
+    "status_text": "Unauthorized",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-request-id": "b2abbdf1-98df-4bbe-9ce8-b132f8434991",
+      "x-content-type-options": "nosniff",
+      "cache-control": null
+    },
+    "elapsed_ms": 13,
+    "body": {
+      "error": {
+        "code": "UNAUTHENTICATED",
+        "message": "Authentication is required for this operation (available from Phase 5)",
+        "request_id": "b2abbdf1-98df-4bbe-9ce8-b132f8434991"
+      }
+    }
+  },
+  "explanation": "expected - identity gate fails closed until Phase 5 ships auth"
+}

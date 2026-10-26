@@ -1,0 +1,51 @@
+# ESRS — local development / demo infrastructure.
+#
+# Phase 2–6 scope: Postgres only (the API/SPA containers are added in Phase 21, see
+# docs/system-architecture.md §8 and §11 — they are intentionally NOT stubbed here yet).
+#
+# Copy .env.example -> .env first; no secret values live in this file.
+#   npm run db:up      # start postgres
+#   npm run db:migrate # apply database/migrations
+#   npm run db:seed    # idempotent reference data
+
+name: esrs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: esrs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-esrs}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-esrs}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # Separate database for integration tests so a test run can TRUNCATE freely
+  # without touching development data (docs/test-plan.md §10).
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: esrs-postgres-test
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: esrs_test
+    ports:
+      - '${POSTGRES_TEST_PORT:-5433}:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d esrs_test']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

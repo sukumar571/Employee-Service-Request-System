@@ -1,0 +1,24 @@
+npm run typecheck
+
+
+> esrs@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> @esrs/shared@0.1.0 typecheck
+> tsc -p tsconfig.test.json
+
+
+> @esrs/database@0.1.0 typecheck
+> tsc -p tsconfig.json
+
+
+> @esrs/backend@0.1.0 typecheck
+> tsc -p tsconfig.test.json
+
+
+> @esrs/frontend@0.1.0 typecheck
+> tsc -p tsconfig.json
+
+
+[exit code 0]

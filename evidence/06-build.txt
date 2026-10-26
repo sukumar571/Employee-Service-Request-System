@@ -1,0 +1,30 @@
+npm run build
+
+
+> esrs@0.1.0 build
+> npm run build --workspace @esrs/shared && npm run build --workspace @esrs/backend && npm run build --workspace @esrs/frontend
+
+
+> @esrs/shared@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @esrs/backend@0.1.0 build
+> tsc -p tsconfig.json
+
+
+> @esrs/frontend@0.1.0 build
+> vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 185 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.92 kB │ gzip:   0.51 kB
+dist/assets/index-CX9BZVAn.css   24.35 kB │ gzip:   4.98 kB
+dist/assets/index-B-0BG4QS.js   448.15 kB │ gzip: 138.68 kB
+
+✓ built in 668ms
+
+[exit code 0]

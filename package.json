@@ -1,0 +1,59 @@
+{
+  "name": "esrs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Employee Service Request System — monorepo root (frontend, backend, shared, database)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=11.0.0"
+  },
+  "packageManager": "npm@11.13.0",
+  "workspaces": [
+    "shared",
+    "database",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run build:shared && concurrently -k -n shared,api,web -c cyan,green,magenta \"npm:dev:shared\" \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:shared": "npm run dev --workspace @esrs/shared",
+    "dev:backend": "npm run dev --workspace @esrs/backend",
+    "dev:frontend": "npm run dev --workspace @esrs/frontend",
+    "build:shared": "npm run build --workspace @esrs/shared",
+    "build": "npm run build --workspace @esrs/shared && npm run build --workspace @esrs/backend && npm run build --workspace @esrs/frontend",
+    "preview:frontend": "npm run preview --workspace @esrs/frontend",
+    "start:backend": "npm run start --workspace @esrs/backend",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "db:migrate": "npm run migrate --workspace @esrs/database",
+    "db:rollback": "npm run rollback --workspace @esrs/database",
+    "db:status": "npm run status --workspace @esrs/database",
+    "db:seed": "npm run seed --workspace @esrs/database",
+    "db:verify": "npm run verify --workspace @esrs/database",
+    "db:reset": "npm run reset --workspace @esrs/database",
+    "db:make": "npm run make --workspace @esrs/database",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "evidence": "node scripts/collect-evidence.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.0"
+  }
+}

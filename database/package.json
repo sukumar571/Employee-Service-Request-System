@@ -1,0 +1,30 @@
+{
+  "name": "@esrs/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ESRS PostgreSQL schema: node-pg-migrate migrations and idempotent seeds",
+  "type": "module",
+  "scripts": {
+    "migrate": "node scripts/run.mjs up",
+    "rollback": "node scripts/run.mjs down",
+    "status": "node scripts/run.mjs status",
+    "seed": "node scripts/run.mjs seed",
+    "verify": "node scripts/run.mjs verify",
+    "reset": "node scripts/run.mjs reset",
+    "make": "node scripts/run.mjs make",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.9",
+    "node-pg-migrate": "^9.0.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@esrs/shared": "*",
+    "@types/node": "^24",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.5"
+  }
+}

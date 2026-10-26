@@ -1,0 +1,32 @@
+# Build / tool output
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+dev-dist/
+
+# Environment & secrets — never commit real values
+.env
+.env.*
+!.env.example
+
+# Evidence: test/build logs and screenshots ARE deliverables for this project and get committed.
+# Only scratch captures generated during a local run are ignored.
+evidence/tmp/
+
+# Local databases / uploads
+pgdata/
+uploads/
+
+# Editor / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

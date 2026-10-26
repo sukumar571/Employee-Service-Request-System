@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:4000/api/v1/does-not-exist"
+  },
+  "response": {
+    "status": 404,
+    "status_text": "Not Found",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-request-id": "13872171-e308-4cba-ba93-b2f410bb6708",
+      "x-content-type-options": "nosniff",
+      "cache-control": null
+    },
+    "elapsed_ms": 19,
+    "body": {
+      "error": {
+        "code": "NOT_FOUND",
+        "message": "Route GET /api/v1/does-not-exist not found",
+        "request_id": "13872171-e308-4cba-ba93-b2f410bb6708"
+      }
+    }
+  },
+  "explanation": "expected - centralized NOT_FOUND envelope for unknown routes"
+}

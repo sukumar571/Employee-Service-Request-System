@@ -1,0 +1,8 @@
+node -e const v = process.version; const run = (c) => { try { return require('node:child_process').execSync(c, { encoding: 'utf8' }).trim(); } catch { return 'unavailable'; } }; console.log('node       ' + v); console.log('npm        ' + run('npm --version')); console.log('git        ' + run('git --version')); console.log('platform   ' + require('node:os').platform() + ' ' + require('node:os').release());
+
+node       v24.17.0
+npm        11.13.0
+git        git version 2.42.0.windows.2
+platform   win32 10.0.26300
+
+[exit code 0]

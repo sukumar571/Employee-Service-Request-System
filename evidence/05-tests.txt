@@ -1,0 +1,79 @@
+npm run test
+
+
+> esrs@0.1.0 test
+> npm run test --workspaces --if-present
+
+
+> @esrs/shared@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/shared
+
+ ✓ src/domain/requestTransitions.test.ts (15 tests) 16ms
+ ✓ src/dto/contract.test.ts (11 tests) 21ms
+
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+   Start at  16:39:44
+   Duration  559ms (import 77%, transform 12%, tests 7%, worker 3%)
+
+
+> @esrs/database@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/database
+
+ ✓ test/enumParity.test.ts (16 tests) 30ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  16:39:46
+   Duration  588ms (import 74%, transform 15%, tests 9%, worker 2%)
+
+
+> @esrs/backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/backend
+
+ ✓ src/domain/sla/businessHours.test.ts (15 tests) 36ms
+ ✓ src/modules/sla/sla.service.test.ts (12 tests) 59ms
+ ✓ src/config/env.test.ts (11 tests) 23ms
+ ✓ src/domain/ports/clock.test.ts (5 tests) 11ms
+ ✓ src/domain/rbac/policy.test.ts (12 tests) 16ms
+ ✓ src/app.test.ts (18 tests) 728ms
+ ✓ src/domain/request/stateMachine.test.ts (12 tests) 15ms
+ ✓ src/config/version.test.ts (2 tests) 6ms
+
+ Test Files  8 passed (8)
+      Tests  87 passed (87)
+   Start at  16:39:47
+   Duration  2.53s (import 65%, tests 23%, transform 9%, worker 3%)
+
+    Isolate  8 workers spawned · ~406ms startup each (spawn + environment, per file)
+             at least ~676ms faster with isolate: false — reuses workers across files instead of one per file
+
+
+> @esrs/frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/frontend
+
+ ✓ src/lib/apiClient.test.ts (7 tests) 26ms
+ ✓ src/components/Badge.test.tsx (5 tests) 371ms
+ ✓ src/pages/LifecyclePage.test.tsx (6 tests) 840ms
+   ✓ LifecyclePage (6)
+     ✓ lists the outgoing transitions of the selected status 521ms
+
+ Test Files  3 passed (3)
+      Tests  18 passed (18)
+   Start at  16:39:51
+   Duration  4.28s (environment 61%, setup 13%, tests 12%, import 10%, transform 3%, worker 1%)
+
+
+[exit code 0]
