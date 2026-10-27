@@ -8,16 +8,16 @@
     "status_text": "Unauthorized",
     "headers": {
       "content-type": "application/json; charset=utf-8",
-      "x-request-id": "504e7dd0-c34d-4c1d-972e-402391c7790d",
+      "x-request-id": "c6b7fb07-7a46-48b2-acbf-7e7b81bc73be",
       "x-content-type-options": "nosniff",
       "cache-control": null
     },
-    "elapsed_ms": 20,
+    "elapsed_ms": 16,
     "body": {
       "error": {
         "code": "UNAUTHENTICATED",
-        "message": "Authentication is required for this operation (available from Phase 5)",
-        "request_id": "504e7dd0-c34d-4c1d-972e-402391c7790d"
+        "message": "Authentication is required for this operation",
+        "request_id": "c6b7fb07-7a46-48b2-acbf-7e7b81bc73be"
       }
     }
   },

@@ -62,10 +62,13 @@ export const changePasswordBodySchema = z
     new_password: passwordSchema,
   })
   .strict()
-  .refine((body) => body.current_password === undefined || body.current_password !== body.new_password, {
-    message: 'The new password must differ from the current password',
-    path: ['new_password'],
-  });
+  .refine(
+    (body) => body.current_password === undefined || body.current_password !== body.new_password,
+    {
+      message: 'The new password must differ from the current password',
+      path: ['new_password'],
+    },
+  );
 export type ChangePasswordBody = z.infer<typeof changePasswordBodySchema>;
 
 /**
@@ -89,15 +92,20 @@ export const updateUserBodySchema = z
   .object({
     full_name: z.string().trim().min(2).max(120).optional(),
     role: userRoleSchema.optional(),
-    department_id: z.union([z.string().regex(/^\d+$/), z.number().int().positive(), z.null()]).optional(),
-    team_category_id:
-      z.union([z.string().regex(/^\d+$/), z.number().int().positive(), z.null()]).optional(),
+    department_id: z
+      .union([z.string().regex(/^\d+$/), z.number().int().positive(), z.null()])
+      .optional(),
+    team_category_id: z
+      .union([z.string().regex(/^\d+$/), z.number().int().positive(), z.null()])
+      .optional(),
     is_active: z.boolean().optional(),
   })
   .strict();
 export type UpdateUserBody = z.infer<typeof updateUserBodySchema>;
 
-export const userIdParamsSchema = z.object({ id: z.string().regex(/^\d+$/, 'User id must be numeric') });
+export const userIdParamsSchema = z.object({
+  id: z.string().regex(/^\d+$/, 'User id must be numeric'),
+});
 
 /** `GET /users` list query (admin). Filters are optional; pagination is clamped by the shared schema. */
 export const listUsersQuerySchema = z.object({

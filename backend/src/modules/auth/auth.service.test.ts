@@ -98,7 +98,12 @@ describe('AuthService.login', () => {
   });
 
   it('rejects a deactivated account only after the password is proven correct', async () => {
-    const dormant = await record({ id: '1', email: 'dormant@corp', role: 'employee', isActive: false });
+    const dormant = await record({
+      id: '1',
+      email: 'dormant@corp',
+      role: 'employee',
+      isActive: false,
+    });
     const { service } = build([dormant]);
 
     const badPw = await service
@@ -122,9 +127,11 @@ describe('AuthService.login', () => {
       await expect(service.login(bad)).rejects.toMatchObject({ code: 'INVALID_CREDENTIALS' });
     }
     // 4th attempt, even with the correct password, is refused until the lockout window elapses.
-    await expect(service.login({ email: 'alice@corp', password: PLAINTEXT })).rejects.toMatchObject({
-      code: 'ACCOUNT_LOCKED',
-    });
+    await expect(service.login({ email: 'alice@corp', password: PLAINTEXT })).rejects.toMatchObject(
+      {
+        code: 'ACCOUNT_LOCKED',
+      },
+    );
   });
 });
 
@@ -186,9 +193,11 @@ describe('AuthService.changePassword', () => {
     expect(stored?.passwordHash).not.toBe(alice.passwordHash);
     expect(stored?.passwordHash).not.toContain('brand new');
     // Old credential no longer authenticates.
-    await expect(service.login({ email: 'alice@corp', password: PLAINTEXT })).rejects.toMatchObject({
-      code: 'INVALID_CREDENTIALS',
-    });
+    await expect(service.login({ email: 'alice@corp', password: PLAINTEXT })).rejects.toMatchObject(
+      {
+        code: 'INVALID_CREDENTIALS',
+      },
+    );
     await expect(
       service.login({ email: 'alice@corp', password: 'brand new passphrase' }),
     ).resolves.toBeTruthy();
@@ -216,7 +225,10 @@ describe('AuthService.changePassword', () => {
     const session = await service.login({ email: 'alice@corp', password: PLAINTEXT });
     const claims = service.verifyAccessToken(session.result.access_token);
 
-    await service.changePassword(claims, { current_password: PLAINTEXT, new_password: 'a different one' });
+    await service.changePassword(claims, {
+      current_password: PLAINTEXT,
+      new_password: 'a different one',
+    });
     await expect(service.refresh(session.refreshToken)).rejects.toMatchObject({
       code: 'UNAUTHENTICATED',
     });
@@ -240,11 +252,20 @@ describe('AuthService provisioning & admin guards', () => {
       { email: 'fresh@corp', full_name: 'Fresh User', role: 'agent', initial_password: PLAINTEXT },
       adminClaims(),
     );
-    expect(created).toMatchObject({ email: 'fresh@corp', role: 'agent', must_change_password: true });
+    expect(created).toMatchObject({
+      email: 'fresh@corp',
+      role: 'agent',
+      must_change_password: true,
+    });
 
     await expect(
       service.provisionUser(
-        { email: 'FRESH@corp', full_name: 'Dup Name', role: 'employee', initial_password: PLAINTEXT },
+        {
+          email: 'FRESH@corp',
+          full_name: 'Dup Name',
+          role: 'employee',
+          initial_password: PLAINTEXT,
+        },
         adminClaims(),
       ),
     ).rejects.toMatchObject({ code: 'CONFLICT' });
@@ -254,10 +275,14 @@ describe('AuthService provisioning & admin guards', () => {
     const soloAdmin = await record({ id: '999', email: 'admin@corp', role: 'admin' });
     const { service } = build([soloAdmin]);
 
-    await expect(service.updateUser('999', { is_active: false }, adminClaims())).rejects.toMatchObject({
+    await expect(
+      service.updateUser('999', { is_active: false }, adminClaims()),
+    ).rejects.toMatchObject({
       code: 'LAST_ADMIN_GUARD',
     });
-    await expect(service.updateUser('999', { role: 'employee' }, adminClaims())).rejects.toMatchObject({
+    await expect(
+      service.updateUser('999', { role: 'employee' }, adminClaims()),
+    ).rejects.toMatchObject({
       code: 'LAST_ADMIN_GUARD',
     });
   });

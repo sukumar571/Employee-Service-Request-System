@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "sort",
+        "message": "Invalid option: expected one of \"created_at\"|\"updated_at\"|\"submitted_at\"|\"resolved_at\"|\"priority\"|\"status\"|\"title\"|\"request_number\"|\"sla_remaining\"|\"id\""
+      }
+    ],
+    "request_id": "46915080-255b-412b-accd-82e004ba48fa"
+  }
+}

@@ -45,11 +45,19 @@ export interface UserRepository {
    * Records a failed login and returns the updated lockout state so the service can decide the
    * response (generic 401 vs 423 locked). Locking is applied when the counter reaches the threshold.
    */
-  onLoginFailure(id: string, at: Date, maxFailures: number, lockoutMinutes: number): Promise<UserRecord>;
+  onLoginFailure(
+    id: string,
+    at: Date,
+    maxFailures: number,
+    lockoutMinutes: number,
+  ): Promise<UserRecord>;
   /** Replaces the password hash and clears the forced-change flag. */
   updatePassword(id: string, passwordHash: string): Promise<void>;
   /** Admin edit of profile/role/active flags. Returns the fresh record or null when absent. */
-  update(id: string, patch: Partial<Omit<UserRecord, 'id' | 'email' | 'passwordHash'>>): Promise<UserRecord | null>;
+  update(
+    id: string,
+    patch: Partial<Omit<UserRecord, 'id' | 'email' | 'passwordHash'>>,
+  ): Promise<UserRecord | null>;
   countActiveAdmins(): Promise<number>;
 }
 

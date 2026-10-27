@@ -144,7 +144,8 @@ export class PostgresUserRepository implements UserRepository {
     if (patch.departmentId !== undefined) set('department_id', patch.departmentId, 'bigint');
     if (patch.teamCategoryId !== undefined) set('team_category_id', patch.teamCategoryId, 'bigint');
     if (patch.isActive !== undefined) set('is_active', patch.isActive);
-    if (patch.mustChangePassword !== undefined) set('must_change_password', patch.mustChangePassword);
+    if (patch.mustChangePassword !== undefined)
+      set('must_change_password', patch.mustChangePassword);
 
     if (assignments.length === 0) return this.findById(id);
 

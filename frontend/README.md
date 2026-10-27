@@ -10,9 +10,9 @@ src/
 ├── main.tsx              # QueryClient + StrictMode + BrowserRouter mount
 ├── App.tsx               # route table
 ├── api/queries.ts        # TanStack Query hooks (server state) + query key registry
-├── components/           # Layout, Feedback (spinner/notice/error), Badge chips
+├── components/           # Layout, Feedback (spinner/notice/error), Badge chips, Activity (thread + timeline)
 ├── lib/                  # config, apiClient, formatting helpers, cx
-├── pages/                # DashboardPage, LifecyclePage, SlaPoliciesPage, NotFoundPage
+├── pages/                # DashboardPage, LifecyclePage, RequestActivityPage, SlaPoliciesPage, NotFoundPage
 ├── test/                 # setup.ts + harness.tsx (fetch stub, providers, fixtures)
 ├── env.d.ts              # typed import.meta.env
 └── index.css             # Tailwind @theme tokens (status/priority/SLA palette)
@@ -56,4 +56,8 @@ same origin as the API, or `CORS_ORIGINS` on the backend is set to the real web 
 - **Tailwind tokens**: colours come from `@theme` in `index.css`. Class strings that depend on a
   status/priority are written out in full (`Badge.tsx`) because Tailwind only generates utilities
   it can see statically.
+- **User content is text, never markup**: comment bodies and timeline details reach React as children,
+  so they are escaped on the way into the DOM. `dangerouslySetInnerHTML` is banned outright by
+  `no-restricted-syntax` in the root ESLint config, which makes a raw-HTML render a lint failure rather
+  than a review catch.
 - **Tests** stub `fetch` per test (`src/test/harness.tsx`); no test requires a running backend.

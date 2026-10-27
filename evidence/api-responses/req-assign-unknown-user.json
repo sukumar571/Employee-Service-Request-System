@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INVALID_ASSIGNEE",
+    "message": "User '999999' is not an assignable account",
+    "request_id": "30cdd787-691a-46b4-8874-0c8f034b2552"
+  }
+}

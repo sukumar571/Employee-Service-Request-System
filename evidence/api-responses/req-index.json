@@ -1,0 +1,534 @@
+[
+  {
+    "key": "login-employee",
+    "verb": "POST",
+    "path": "/auth/login",
+    "status": 200,
+    "etag": "W/\"21a-p2yuZ3OEs46jUGh8omJ/CsSvGeM\""
+  },
+  {
+    "key": "login-agent",
+    "verb": "POST",
+    "path": "/auth/login",
+    "status": 200,
+    "etag": "W/\"20b-km5F0QpOSI60UtCEohxYMkqZeTc\""
+  },
+  {
+    "key": "login-hrAgent",
+    "verb": "POST",
+    "path": "/auth/login",
+    "status": 200,
+    "etag": "W/\"211-vMN6mlweFtZXwsyAXDs204T0fS8\""
+  },
+  {
+    "key": "login-manager",
+    "verb": "POST",
+    "path": "/auth/login",
+    "status": 200,
+    "etag": "W/\"213-Cb4DIQre0Pv/UzkWeJlfwxlcnlU\""
+  },
+  {
+    "key": "login-admin",
+    "verb": "POST",
+    "path": "/auth/login",
+    "status": 200,
+    "etag": "W/\"216-CFCeGIrohABz36kDCp0NqExauHA\""
+  },
+  {
+    "key": "create",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 201,
+    "etag": "\"0\""
+  },
+  {
+    "key": "reject-short-title",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 400,
+    "etag": "W/\"ca-WX/ghqd09Dy48oi3Zwo/1TKyFbU\""
+  },
+  {
+    "key": "reject-unknown-category",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 400,
+    "etag": "W/\"c6-yTyc2Y/jUPHEAXrCba5BueOjS7Q\""
+  },
+  {
+    "key": "reject-cross-category-sub",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 400,
+    "etag": "W/\"e6-7Ynqhumd5EdnArE4MbCiD0MDIXE\""
+  },
+  {
+    "key": "reject-protected-field",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 400,
+    "etag": "W/\"c4-p2PuuYyiPu7afsR8ui8ANIXfuRo\""
+  },
+  {
+    "key": "create-draft",
+    "verb": "POST",
+    "path": "/requests",
+    "status": 201,
+    "etag": "\"0\""
+  },
+  {
+    "key": "patch-draft",
+    "verb": "PATCH",
+    "path": "/requests/5",
+    "status": 200,
+    "etag": "\"1\""
+  },
+  {
+    "key": "patch-draft-priority-as-employee",
+    "verb": "PATCH",
+    "path": "/requests/5",
+    "status": 403,
+    "etag": "W/\"9b-k6yVOIIvqekTkhjeUiO24sEDks8\""
+  },
+  {
+    "key": "patch-draft-priority-as-manager",
+    "verb": "PATCH",
+    "path": "/requests/5",
+    "status": 404,
+    "etag": "W/\"74-JWeXe19dHGH7/QzQ7TIIcLd94wc\""
+  },
+  {
+    "key": "patch-draft-protected-field",
+    "verb": "PATCH",
+    "path": "/requests/5",
+    "status": 400,
+    "etag": "W/\"107-X0dvwHagHrYTfqroQgkdkxhk5gg\""
+  },
+  {
+    "key": "submit-draft",
+    "verb": "POST",
+    "path": "/requests/5/submit",
+    "status": 200,
+    "etag": "\"2\""
+  },
+  {
+    "key": "reject-edit-submitted",
+    "verb": "PATCH",
+    "path": "/requests/5",
+    "status": 409,
+    "etag": "W/\"95-y8BdOSF+zXK2SJCPlFobB0zRvFw\""
+  },
+  {
+    "key": "list-own",
+    "verb": "GET",
+    "path": "/requests?page=1&page_size=5&sort=-submitted_at",
+    "status": 200,
+    "etag": "W/\"f0b-x/fvBNPfw4Vi8mQNLU7Dat/tEME\""
+  },
+  {
+    "key": "list-filter",
+    "verb": "GET",
+    "path": "/requests?status=submitted&priority=high&q=laptop",
+    "status": 200,
+    "etag": "W/\"318-ONXv6yx6Sdi3jvJ39jLyeqcQODM\""
+  },
+  {
+    "key": "list-team-queue",
+    "verb": "GET",
+    "path": "/requests?assignee_id=me&sort=priority",
+    "status": 200,
+    "etag": "W/\"33c-22Y7n/Pw5xcElqyhmleANYMrsno\""
+  },
+  {
+    "key": "list-manager-all",
+    "verb": "GET",
+    "path": "/requests?status=submitted,assigned&page=1",
+    "status": 200,
+    "etag": "W/\"90b-LVnLV8Lr+3j/F/5Pm0WW1EF/pk4\""
+  },
+  {
+    "key": "detail",
+    "verb": "GET",
+    "path": "/requests/4",
+    "status": 200,
+    "etag": "\"0\""
+  },
+  {
+    "key": "read-anonymous",
+    "verb": "GET",
+    "path": "/requests",
+    "status": 401,
+    "etag": "W/\"92-OqPEjfMd7eWkjZBhOXBsyqvlygU\""
+  },
+  {
+    "key": "read-out-of-scope-404",
+    "verb": "GET",
+    "path": "/requests/4",
+    "status": 404,
+    "etag": "W/\"74-YmIi145Inv2ffcJ4F4UpnZU9l7s\""
+  },
+  {
+    "key": "missing-id",
+    "verb": "GET",
+    "path": "/requests/999999",
+    "status": 404,
+    "etag": "W/\"79-M39zVq6u/gk1f44Kp0g6Q7dotTg\""
+  },
+  {
+    "key": "bad-id",
+    "verb": "GET",
+    "path": "/requests/not-a-number",
+    "status": 400,
+    "etag": "W/\"c3-fgwgZaCLPYCaNpWQIXkkqAXs5WE\""
+  },
+  {
+    "key": "bad-filter",
+    "verb": "GET",
+    "path": "/requests?status=pending",
+    "status": 400,
+    "etag": "W/\"130-XoQMnV0psQ7oQYjxtPtJmaGc1kk\""
+  },
+  {
+    "key": "bad-sort",
+    "verb": "GET",
+    "path": "/requests?sort=description",
+    "status": 400,
+    "etag": "W/\"152-NqpQoAut5w3tHoiahuJx4EuFNb4\""
+  },
+  {
+    "key": "unknown-query-key",
+    "verb": "GET",
+    "path": "/requests?nonexistent=1",
+    "status": 400,
+    "etag": "W/\"ce-lNZT5rlvHAgwoafGtpnYEwsiwRg\""
+  },
+  {
+    "key": "clamped-page-size",
+    "verb": "GET",
+    "path": "/requests?page_size=5000",
+    "status": 200,
+    "etag": "W/\"f0d-ffvPwR8WDUxGDiwe7UbtuUglfVM\""
+  },
+  {
+    "key": "employee-assign-forbidden",
+    "verb": "POST",
+    "path": "/requests/4/assign",
+    "status": 403,
+    "etag": "W/\"8f-Y6u5sw5KH+p/Suil10RQaq9X1sk\""
+  },
+  {
+    "key": "employee-transition-assign-forbidden",
+    "verb": "POST",
+    "path": "/requests/4/transition",
+    "status": 403,
+    "etag": "W/\"87-0A1XlUxjfvUfc3Utz9tQtz9pXeU\""
+  },
+  {
+    "key": "employee-priority-forbidden",
+    "verb": "PATCH",
+    "path": "/requests/4",
+    "status": 403,
+    "etag": "W/\"9b-lCrErAHUGET+5ExF+qL0K5nefaM\""
+  },
+  {
+    "key": "agent-cancel-forbidden",
+    "verb": "POST",
+    "path": "/requests/4/cancel",
+    "status": 403,
+    "etag": "W/\"9a-3Ug+JUwkb8V7mSEj0eM39tEKJ9s\""
+  },
+  {
+    "key": "assign",
+    "verb": "POST",
+    "path": "/requests/4/assign",
+    "status": 200,
+    "etag": "\"1\""
+  },
+  {
+    "key": "assign-unknown-user",
+    "verb": "POST",
+    "path": "/requests/4/assign",
+    "status": 422,
+    "etag": "W/\"90-Tva8JC8DPv81YEWm7xyEnlAgn34\""
+  },
+  {
+    "key": "assign-employee-role",
+    "verb": "POST",
+    "path": "/requests/4/assign",
+    "status": 422,
+    "etag": "W/\"9a-70kPL0FnncIAh64UKqmdeJcwVoM\""
+  },
+  {
+    "key": "assign-wrong-team",
+    "verb": "POST",
+    "path": "/requests/4/assign",
+    "status": 422,
+    "etag": "W/\"bd-T/iZBJaNbiYoK3XdjFkUGsenUKg\""
+  },
+  {
+    "key": "stale-if-match",
+    "verb": "POST",
+    "path": "/requests/4/start",
+    "status": 409,
+    "etag": "W/\"d0-BAgXOorvX5hPrtO9fokSqP+r9SU\""
+  },
+  {
+    "key": "bad-if-match",
+    "verb": "POST",
+    "path": "/requests/4/start",
+    "status": 400,
+    "etag": "W/\"98-M0QNtWSNrEHFqIEH8MvMhnenm+g\""
+  },
+  {
+    "key": "comment-anonymous",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 401,
+    "etag": "W/\"92-oCy67CAZli6xddWwNUZk6B4/C6s\""
+  },
+  {
+    "key": "comment-empty",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 400,
+    "etag": "W/\"d4-h9IKdnjLRfr2WXfjCWM8CYgP1DY\""
+  },
+  {
+    "key": "comment-oversized",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 400,
+    "etag": "W/\"cf-wjrIpSBif5KpCFiXyOQHqNshYDc\""
+  },
+  {
+    "key": "comment-smuggled-author",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 400,
+    "etag": "W/\"e6-PmdiD8pWv5fPrE961UINVg4HYv4\""
+  },
+  {
+    "key": "comment-internal-by-employee",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 403,
+    "etag": "W/\"8d-ysJA4FV9Ywy9f5LQwAU70DSd7HA\""
+  },
+  {
+    "key": "comment-public",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 201,
+    "etag": "W/\"119-Z8zj0rR9qw7/GTcQOf3Gdz1a3hQ\""
+  },
+  {
+    "key": "comment-internal",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 201,
+    "etag": "W/\"118-A+RB3iL/wnPNFLG1ClmBiZV7nr0\""
+  },
+  {
+    "key": "patch-priority-by-manager",
+    "verb": "PATCH",
+    "path": "/requests/4",
+    "status": 200,
+    "etag": "\"2\""
+  },
+  {
+    "key": "start",
+    "verb": "POST",
+    "path": "/requests/4/start",
+    "status": 200,
+    "etag": "\"3\""
+  },
+  {
+    "key": "claim-assigned-illegal",
+    "verb": "POST",
+    "path": "/requests/4/claim",
+    "status": 409,
+    "etag": "W/\"96-qGXOBAaBbBkcFEZ9q7mHzuudnpk\""
+  },
+  {
+    "key": "hold",
+    "verb": "POST",
+    "path": "/requests/4/hold",
+    "status": 200,
+    "etag": "\"4\""
+  },
+  {
+    "key": "hold-without-reason",
+    "verb": "POST",
+    "path": "/requests/4/hold",
+    "status": 400,
+    "etag": "W/\"d6-O8gPBx59XksL1AMzKgtZfdQctrk\""
+  },
+  {
+    "key": "resume",
+    "verb": "POST",
+    "path": "/requests/4/resume",
+    "status": 200,
+    "etag": "\"5\""
+  },
+  {
+    "key": "resolve-short-note",
+    "verb": "POST",
+    "path": "/requests/4/resolve",
+    "status": 400,
+    "etag": "W/\"df-xjezcC8Bh/TZh7iGc/HHrVah4hY\""
+  },
+  {
+    "key": "resolve",
+    "verb": "POST",
+    "path": "/requests/4/resolve",
+    "status": 200,
+    "etag": "\"6\""
+  },
+  {
+    "key": "close",
+    "verb": "POST",
+    "path": "/requests/4/close",
+    "status": 200,
+    "etag": "\"7\""
+  },
+  {
+    "key": "staff-close-forbidden",
+    "verb": "POST",
+    "path": "/requests/4/reopen",
+    "status": 403,
+    "etag": "W/\"97-UabvBaNe7n8Y6RpwafUoPRwGwEQ\""
+  },
+  {
+    "key": "reopen",
+    "verb": "POST",
+    "path": "/requests/4/reopen",
+    "status": 200,
+    "etag": "\"8\""
+  },
+  {
+    "key": "transition-generic",
+    "verb": "POST",
+    "path": "/requests/4/transition",
+    "status": 200,
+    "etag": "\"9\""
+  },
+  {
+    "key": "close-again",
+    "verb": "POST",
+    "path": "/requests/4/close",
+    "status": 200,
+    "etag": "\"10\""
+  },
+  {
+    "key": "cancel-closed-illegal",
+    "verb": "POST",
+    "path": "/requests/4/cancel",
+    "status": 409,
+    "etag": "W/\"92-Y8OF3oqdoh2F3YU6e1OySczkvME\""
+  },
+  {
+    "key": "comment-post-closure",
+    "verb": "POST",
+    "path": "/requests/4/comments",
+    "status": 201,
+    "etag": "W/\"113-qNyZcbBQct8yyNfBxqmdHMxL0IQ\""
+  },
+  {
+    "key": "events",
+    "verb": "GET",
+    "path": "/requests/4/events?limit=50",
+    "status": 200,
+    "etag": "W/\"e49-OzJ58srsvojkYcnhpXBNDAxZWhQ\""
+  },
+  {
+    "key": "events-staff",
+    "verb": "GET",
+    "path": "/requests/4/events?limit=50",
+    "status": 200,
+    "etag": "W/\"f5b-XFExDNsnJXJJwBEcstWpp8ZuqqM\""
+  },
+  {
+    "key": "events-over-limit",
+    "verb": "GET",
+    "path": "/requests/4/events?limit=5000",
+    "status": 400,
+    "etag": "W/\"cb-7uLSslNS1qIX8G6Kbx8nPDit3aM\""
+  },
+  {
+    "key": "events-anonymous",
+    "verb": "GET",
+    "path": "/requests/4/events",
+    "status": 401,
+    "etag": "W/\"92-cxfOTiHfHGNIsg9RCL8W07TKd3A\""
+  },
+  {
+    "key": "thread-employee",
+    "verb": "GET",
+    "path": "/requests/4/comments",
+    "status": 200,
+    "etag": "W/\"251-OuGdeyLnbtRkjU2DhBYiKFyiZJY\""
+  },
+  {
+    "key": "thread-agent",
+    "verb": "GET",
+    "path": "/requests/4/comments",
+    "status": 200,
+    "etag": "W/\"361-R5svuauoPDTk4pN9GHjETmACsZw\""
+  },
+  {
+    "key": "thread-paged",
+    "verb": "GET",
+    "path": "/requests/4/comments?page=2&page_size=2",
+    "status": 200,
+    "etag": "W/\"13f-H/5g6RQ5jMUb76OFF3XCz3V4K78\""
+  },
+  {
+    "key": "thread-other-request",
+    "verb": "GET",
+    "path": "/requests/999999/comments",
+    "status": 404,
+    "etag": "W/\"79-lBCHNBkwIf/v0QgEueIE7ORXm64\""
+  },
+  {
+    "key": "thread-anonymous",
+    "verb": "GET",
+    "path": "/requests/4/comments",
+    "status": 401,
+    "etag": "W/\"92-wwzavDOJvjlJRsVqCwjRAXA9Wo8\""
+  },
+  {
+    "key": "timeline-employee",
+    "verb": "GET",
+    "path": "/requests/4/timeline?limit=50",
+    "status": 200,
+    "etag": "W/\"f86-n8mpcL/0WjPyHGRu0vffkQQxsGM\""
+  },
+  {
+    "key": "timeline-manager",
+    "verb": "GET",
+    "path": "/requests/4/timeline?limit=50",
+    "status": 200,
+    "etag": "W/\"10df-ZxBGEqKaTiBXZvGLimbFkoWOAbE\""
+  },
+  {
+    "key": "timeline-over-limit",
+    "verb": "GET",
+    "path": "/requests/4/timeline?limit=5000",
+    "status": 400,
+    "etag": "W/\"cb-uktbelcwVxE9BLfy6JK9rY9fAYY\""
+  },
+  {
+    "key": "timeline-anonymous",
+    "verb": "GET",
+    "path": "/requests/4/timeline",
+    "status": 401,
+    "etag": "W/\"92-VfZZ1tz9V+xZsiL9wqGgLl7Hk2I\""
+  },
+  {
+    "key": "audit-logs-not-exposed",
+    "verb": "GET",
+    "path": "/audit-logs",
+    "status": 404,
+    "etag": "W/\"85-5a0tVsNk6IOdQMGKyz8ZcI42Vwk\""
+  }
+]

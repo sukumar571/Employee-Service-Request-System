@@ -6,11 +6,15 @@ import { cx } from '../lib/cx';
  * Application shell: sticky header, primary navigation and the routed `<main>` region.
  * Nav links use `NavLink` so the active route is expressed with `aria-current="page"`
  * rather than a class alone (docs/requirements.md NFR-8).
+ *
+ * The activity link points at request 1 because the screen is scoped to one request and the portal has
+ * no search/list view yet: it is a stable seeded id, and the id field on the page is how you move.
  */
 const NAV_ITEMS = [
   { to: '/', label: 'Overview', end: true },
   { to: '/lifecycle', label: 'Lifecycle', end: false },
   { to: '/sla/policies', label: 'SLA policies', end: false },
+  { to: '/requests/1/activity', label: 'Activity', end: false },
 ] as const;
 
 function navClass({ isActive }: { isActive: boolean }): string {

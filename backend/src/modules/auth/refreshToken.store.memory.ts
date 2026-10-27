@@ -39,7 +39,8 @@ export class InMemoryRefreshTokenStore implements RefreshTokenStore {
 
   markRotated(id: string, replacedByHash: string, at: Date): Promise<void> {
     const current = this.rows.get(id);
-    if (current) this.rows.set(id, { ...current, revokedReason: 'rotated', replacedByHash, replacedAt: at });
+    if (current)
+      this.rows.set(id, { ...current, revokedReason: 'rotated', replacedByHash, replacedAt: at });
     return Promise.resolve();
   }
 

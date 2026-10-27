@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "1",
+    "request_id": "4",
+    "author": {
+      "id": "1",
+      "full_name": "Demo Employee"
+    },
+    "body": "The boot loop came back this morning after the second reboot.",
+    "visibility": "public",
+    "is_post_closure": false,
+    "created_at": "2026-10-27T18:37:36.917Z",
+    "updated_at": "2026-10-27T18:37:36.917Z"
+  }
+}

@@ -83,17 +83,12 @@ export function createAuthRouter(service: AuthService, config: AppConfig): Route
   });
 
   // --- authenticated ---
-  router.get(
-    '/me',
-    authenticate(service),
-    passwordChangeGate(),
-    async (req, res) => {
-      // No :id — always the caller's own record (IDOR-safe by construction).
-      const claims = req.authClaims;
-      if (!claims) throw new Error('authenticate did not populate claims');
-      sendResource(res, meResultSchema.parse(await service.me(claims.userId)));
-    },
-  );
+  router.get('/me', authenticate(service), passwordChangeGate(), async (req, res) => {
+    // No :id — always the caller's own record (IDOR-safe by construction).
+    const claims = req.authClaims;
+    if (!claims) throw new Error('authenticate did not populate claims');
+    sendResource(res, meResultSchema.parse(await service.me(claims.userId)));
+  });
 
   // change-password is authenticated but NOT behind passwordChangeGate — it is how the user escapes
   // the forced-change state.

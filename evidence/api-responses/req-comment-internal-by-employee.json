@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Role 'employee' may not write an internal note",
+    "request_id": "7fcef832-3881-4925-9f5f-5f3216f3651f"
+  }
+}

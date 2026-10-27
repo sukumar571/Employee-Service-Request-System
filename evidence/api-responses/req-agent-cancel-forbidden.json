@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Role 'agent' may not cancel a request in status 'submitted'",
+    "request_id": "9304107f-b1d2-4bb5-a11e-3d44ece96400"
+  }
+}

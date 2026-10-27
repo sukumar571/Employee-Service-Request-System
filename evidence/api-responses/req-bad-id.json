@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "id",
+        "message": "id must be a numeric identifier"
+      }
+    ],
+    "request_id": "6c044c88-df17-4cb8-9ee4-d2aeb6f016d7"
+  }
+}

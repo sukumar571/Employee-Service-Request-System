@@ -1,4 +1,5 @@
 import type { BusinessHours, RequestPriority } from '@esrs/shared';
+import type { AuditWrite } from '../../ports/audit.js';
 
 /**
  * Persistence port for SLA policies (docs/database-design.md §2.8, `sla_policies`).
@@ -17,8 +18,17 @@ export interface SlaPolicyRecord {
 export interface SlaPolicyRepository {
   list(): Promise<SlaPolicyRecord[]>;
   find(priority: RequestPriority): Promise<SlaPolicyRecord | undefined>;
-  /** Manager+ edit (ST-403): applies to NEW requests only — outstanding trackers keep their snapshot. */
-  save(priority: RequestPriority, patch: PolicyPatch): Promise<SlaPolicyRecord>;
+  /**
+   * Manager+ edit (ST-403): applies to NEW requests only — outstanding trackers keep their snapshot.
+   * The policy's audit rows are passed in rather than recorded by the caller, so the Postgres adapter
+   * can insert them on the same client as the `UPDATE`: a policy change and its trail row commit
+   * together, and a rejected change leaves no row behind.
+   */
+  save(
+    priority: RequestPriority,
+    patch: PolicyPatch,
+    audit?: readonly AuditWrite[],
+  ): Promise<SlaPolicyRecord>;
 }
 
 export interface PolicyPatch {

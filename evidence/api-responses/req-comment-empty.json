@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "body",
+        "message": "A comment needs at least 1 non-space character"
+      }
+    ],
+    "request_id": "1035ea29-a99b-4cfe-b816-e6836f923af6"
+  }
+}

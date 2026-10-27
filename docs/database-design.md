@@ -127,8 +127,11 @@ CREATE TABLE request_numbers (
   year     INT PRIMARY KEY,
   last_seq BIGINT NOT NULL DEFAULT 0
 );
--- On submit: INSERT … ON CONFLICT (year) DO UPDATE SET last_seq = last_seq + 1 RETURNING last_seq
+-- On submit: INSERT INTO request_numbers (year, last_seq) VALUES ($1, 1)
+--            ON CONFLICT (year) DO UPDATE SET last_seq = last_seq + 1 RETURNING last_seq
 -- inside the submission transaction → unique sequential number per year under concurrency.
+-- `last_seq` is the sequence already handed out, so the row is seeded with 1 rather than left to the
+-- column default: the first ticket of a fresh year is REQ-{YYYY}-000001.
 ```
 
 ### 2.5 assignments (audit of who held the ticket)
@@ -150,10 +153,21 @@ CREATE TABLE comments (
   body TEXT NOT NULL CHECK (char_length(body) BETWEEN 1 AND 5000),
   visibility comment_visibility NOT NULL DEFAULT 'public',
   is_post_closure BOOL NOT NULL DEFAULT false,   -- BR-8
-  created_at …
+  created_at / updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX idx_comments_request ON comments(request_id, created_at);
 ```
-Internal comments: `visibility='internal'` — **filtered in SQL of every read path**, not just API layer.
+
+| Fact | Where it is nailed down |
+|---|---|
+| 1–5000 characters, never blank | `comments_body_check` **and** `commentBodySchema` (`COMMENT_BODY_MIN/MAX` in `@esrs/shared`), which trims before it measures. A payload the API accepts cannot be rejected by the table, and `'   '` fails instead of being stored as content |
+| author and instant | stamped by `RequestActivityService` from the verified identity and the injected clock. The POST schema is `.strict()`, so `author_id`/`created_at` cannot be smuggled in; migration 017 then freezes them at row level (§8) |
+| BR-8 post-closure flag | derived, never supplied — `true` when the request was already `resolved`/`closed`/`cancelled` at the moment of posting |
+| internal notes | `visibility='internal'` — **filtered in the SQL of every read path**: `listComments` and `timeline` drop the rows, and `events` drops the `comment_added` *marker* of an internal note, because a marker discloses that the note exists and how long it was. `page_size`, `total` and the payload therefore all describe the same already-authorised set |
+
+A comment is content; the audit row that announces it is evidence. `comment.added` stores
+`{request_id, request_number, author_id, visibility, characters, is_post_closure}` — the *length* of the
+text, never the text.
 
 ### 2.7 request_events (activity history, append-only)
 ```sql
@@ -171,8 +185,17 @@ CREATE TABLE request_events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_events_request ON request_events(request_id, created_at);
--- No UPDATE/DELETE grants at app level (append-only; revoke in DB role for prod hardening).
+-- Append-only since 017: a BEFORE UPDATE/DELETE trigger raises SQLSTATE 42501, and a deployment that
+-- defines the `esrs_app` role gets INSERT/SELECT only. §8 states what that does and does not guarantee.
 ```
+
+`comment_added` rows are written in the same transaction as the comment they announce and carry a
+summary — `{comment_id, visibility, characters, is_post_closure}` — never the body.
+`GET /requests/{id}/timeline` (api-spec §7.3) drops those markers from this table and unions the real
+`comments` rows in their place, so a comment appears once, with its text, visibility-filtered. The plain
+event feed (api-spec §6.4) keeps the marker of every comment the reader may see and hides the marker of
+an internal note from anyone below `agent` — the same predicate as the thread, applied to the metadata
+instead of to the content, so no read path lets a staff-only note announce itself to its subject.
 
 ### 2.8 sla_policies & sla_trackers
 ```sql
@@ -257,15 +280,52 @@ CREATE INDEX idx_la_recent ON login_attempts(email_lf, attempted_at DESC);
 ```sql
 CREATE TABLE audit_logs (
   id PK, actor_id FK users, actor_role user_role, actor_ip INET,
-  request_id TEXT,               -- x-request-id, so an audit row traces to one API call
-  action TEXT NOT NULL,          -- 'user.created','role.changed','sla_policy.updated',…
+  http_request_id TEXT,          -- x-request-id: the audit row traces to one API call
+  request_id BIGINT FK requests  -- the audited ticket; SET NULL, so the trail outlives the row
+           ON DELETE SET NULL,
+  action TEXT NOT NULL,          -- 'user.created','role.changed','comment.added',…
   entity_type TEXT, entity_id TEXT,
   before JSONB, after JSONB, created_at …
 );
-CREATE INDEX idx_audit_request ON audit_logs(request_id) WHERE request_id IS NOT NULL;
+CREATE INDEX idx_audit_http_request ON audit_logs(http_request_id) WHERE http_request_id IS NOT NULL;
+CREATE INDEX idx_audit_service_request ON audit_logs(request_id) WHERE request_id IS NOT NULL;
 ```
-`actor_role` and `request_id` are filled by `PostgresAuditSink`, which is the same sink the SLA
-service writes through — so "who changed what, under which request" is one query.
+Migration 015 split what used to be one ambiguous `request_id TEXT` into these two columns: the
+correlation string keeps its old index, and the service-request reference became a real FK. It is
+`SET NULL` and never `CASCADE` — deleting a ticket must not delete the evidence about it, and the
+append-only trigger means a cascaded `DELETE` could not have written the trail's own rows anyway (§8).
+`actor_role` is the role at the moment of the action, and `actor_id` is NULL for anonymous/system
+actions; both are filled from the entry the caller supplies, whether it arrives through the sink or
+through a transactional write.
+
+**Two write paths, one statement.** Both funnel through `INSERT_AUDIT_SQL`
+(`backend/src/db/audit.sql.ts`), so they cannot drift into recording different things:
+
+| Path | Used by | Guarantee |
+|---|---|---|
+| `AuditWrite` closure handed to a repository write | request aggregate (create, submit, patch, every lifecycle action, assignment), comments, SLA policy edits | the INSERT runs on the *same* transaction's client: a failed audit row rolls the business write back, and a committed change can never be missing from the trail |
+| `AuditSink.record()` | auth/security events | best-effort and never throws — an audit outage must not turn a completed login into a 500 |
+
+Actions recorded today: `request.created`, `request.submitted`, `request.updated`, `request.<action>`
+for every lifecycle move (`claim`, `assign`, `start`, `hold`, `resume`, `resolve`, `close`, `reopen`,
+`cancel`, `escalate`), `request.assigned` (the assignment side-effect, carrying
+`assignee_open_tickets_before`), `comment.added`, `sla_policy.updated`, `user.created`, `user.updated`,
+`role.changed`, `auth.login.success`, `auth.login.failed`, `auth.login.blocked`, `auth.logout`,
+`auth.refresh.reuse_detected`, `password.changed`.
+
+`entity_id` names the row that changed and `request_id` the ticket it belongs to — a comment is its own
+entity, so its audit entry points at the *parent* request. `before`/`after` are the field images the
+service had already read and the patch it asked for; a rejected write never reaches the table at all.
+
+**Nothing sensitive is stored.** `withRedaction()` walks both images and replaces the value of any key
+whose words hit `SENSITIVE_TOKENS` (`password`, `passwd`, `pwd`, `secret`, `token`, `authorization`,
+`cookie`, `credential(s)`, `apikey`/`api_key`, `accesskey`, `privatekey`, `session`, `salt`, `hash`,
+`otp`, `totp`, `mfa`, `jwt`, `bearer`, `refresh`) with `'[redacted]'`, collapses structures deeper than
+`AUDIT_MAX_DEPTH` (6) or self-referential, clips strings over `AUDIT_VALUE_MAX` (512) with an explicit
+`…[truncated]` marker, and renders non-JSON values as strings so serialising cannot throw. Key names are
+split on separators *and* camel-case boundaries, so `api_key`, `apiKey` and `newPassword` are all caught
+while ordinary fields such as `author` or `bypass` survive untouched. A password, an access token and a
+comment body therefore never reach `audit_logs`.
 
 ### 2.13 app_settings (single-row-per-key config)
 ```sql
@@ -299,6 +359,9 @@ needs no TypeScript toolchain at migrate time. Seeds are *not* migrations: they 
 | 012 | `012_notifications.sql` | |
 | 013 | `013_auth_security.sql` | refresh_token_families, login_attempts |
 | 014 | `014_audit_logs_app_settings.sql` | audit_logs, app_settings (+ seed defaults) |
+| 015 | `015_schema_alignment_columns.sql` | the columns the API had grown that the first cut of the schema lacked |
+| 016 | `016_refresh_rotation_timestamp.sql` | `replaced_at` on refresh_token_families (rotation lineage) |
+| 017 | `017_history_immutability.sql` | append-only triggers on audit_logs + request_events, comment provenance trigger, least-privilege grants when `esrs_app` exists (§8) |
 | — | `seeds/001_reference_data.sql` | departments, categories, sub-categories, app settings |
 | — | `seeds/002_demo_data.sql` | demo users/taxonomy/sample requests; guarded by `app.current_environment='demo'`, demo password hash injected at run time |
 
@@ -313,11 +376,13 @@ never re-used (the runner records file names in the `pgmigrations` table).
 | Lifecycle legality | domain state machine (app) + `version` optimistic lock |
 | Priority change needs reason | service (app) + `status_reason NOT NULL` when status changed via API |
 | Title/description length | DB CHECK + zod schema (both) |
+| Comment length / non-blank | DB CHECK + zod schema (both) |
+| Comment author & instant are real | service stamps them, `.strict()` schema rejects smuggling, 017 trigger freezes them |
 | Attachment size/type | app (magic bytes) + DB CHECK size |
 | One tracker per request | DB UNIQUE(request_id) |
 | Team visibility | service query constraint (`team_category_id` = request.category) |
 | Last admin protected | service transaction (count check + row lock) |
-| Append-only history/audit | app-level (no update/delete routes) + optional DB privilege revoke |
+| Append-only history/audit | migration 017: BEFORE UPDATE/DELETE triggers (SQLSTATE 42501) on `audit_logs` and `request_events`, provenance trigger on `comments`, and privilege grants where `esrs_app` exists — see §8 for the limits |
 
 ## 5. ID & numbering
 
@@ -338,7 +403,56 @@ notifications (partial), tracker sweep (partial on `breached=false`), full-text 
 `pg_dump -Fc` nightly via cron into a mounted volume; restore drill documented in README runbook;
 demo seed is idempotent so restore + seed = working demo. Retention: 7 daily / 4 weekly.
 
-## 8. Deferred / rejected design options
+## 8. History immutability — what migration 017 guarantees, and what it does not
+
+Three tiers, strongest first.
+
+| Tier | Mechanism | Holds when |
+|---|---|---|
+| 1 | `REVOKE UPDATE, DELETE, TRUNCATE ON audit_logs, request_events FROM esrs_app` (+ `REVOKE DELETE ON comments`) | the deployment defines a separate application role. PostgreSQL refuses the statement before any code runs and the session cannot switch it off |
+| 2 | `forbid_history_mutation()` — a BEFORE UPDATE/DELETE trigger on `audit_logs` and `request_events` raising SQLSTATE `42501` | any role, including the schema owner. **This is the tier that actually protects the development database** |
+| 3 | `preserve_comment_provenance()` — a BEFORE UPDATE trigger on `comments` freezing `id`, `request_id`, `author_id`, `created_at`, `is_post_closure` | always, for the columns listed; `body` and `visibility` stay correctable on purpose |
+
+Both guard functions honour one documented escape hatch,
+`SET LOCAL esrs.allow_history_mutation = 'on'`, for maintenance (retention purge, erasure) and for the
+foreign-key cascade below. No application code path issues `SET`, and the setting is transaction-scoped.
+`database/scripts/verify.mjs` asserts every tier live: an audit UPDATE and DELETE, an event actor swap
+and delete, a comment author swap and back-date are all refused, and the final check proves the hatch
+does not survive its own transaction.
+
+**Honest limitations.**
+
+- **The development database is single-owner.** `docker-compose.yml` defines one role, `esrs`, which owns
+  the schema, so the `REVOKE … FROM esrs_app` block is a guarded no-op (`IF EXISTS`) there. Tier 1 is
+  real only in a deployment that creates `esrs_app` and points `DATABASE_URL` at it; today the guarantee
+  rests on tier 2 alone.
+- **A row trigger cannot stop `TRUNCATE`.** Triggers do not fire for TRUNCATE, and the schema owner can
+  always `DROP TRIGGER`/`DROP TABLE`. Tier 2 protects against application bugs and ordinary SQL, not
+  against a DBA. If tamper-evidence has to survive a determined insider, the answer is shipping the
+  table to WORM storage or an external append-only log — not more triggers in this schema.
+- **`ON DELETE CASCADE` still reaches `request_events` and `comments`.** Deleting a request deletes its
+  history, which is why the cascade needs the escape hatch at all. A `RESTRICT` policy would be
+  stronger; that is *not* what the schema does today, because deleting a request is a legitimate
+  demo-data reset.
+- **Rows are immutable, not provable.** There is no hash chain, signature or external receipt, so a
+  holder of tier-2 bypass could drop a table's contents without leaving evidence inside the database.
+- **Ids and roles are silently NULL when they do not fit.** `actor_id` and `request_id` are BIGINT
+  columns, so a non-numeric subject (an `anonymous` login attempt, a test JWT subject) and
+  `sla_policy.updated`'s `entity_id` of `'high'` bind NULL into them; `actor_role` becomes NULL if it is
+  outside the `user_role` enum. The action, entity and payloads survive — the link to a row that does
+  not exist as an id does not.
+- **Two clocks.** In-transaction audit rows carry the injected application clock; best-effort security
+  rows fall back to `COALESCE($10, now())`, the database clock. Ordering is only guaranteed within one
+  request's own writes, so the timeline tie-break (instant, then source, then id) is deterministic per
+  ticket but cannot prove causality across two API calls.
+- **No retention job exists.** Nothing deletes or archives audit rows today, so `audit_logs` and
+  `request_events` grow without bound; the 7-daily/4-weekly retention plan in §7 covers dumps of the
+  whole cluster, not this table's lifecycle.
+- **No read endpoint for audit data.** `GET /audit-logs` (api-spec §12) is still unimplemented, so
+  administrators cannot currently query what is guaranteed to be there — the trail is written and
+  frozen, but only inspectable with SQL.
+
+## 9. Deferred / rejected design options
 
 - **Normalization of events into many tables** → rejected: single typed `request_events` + JSONB detail is simpler and immutable.
 - **STS temporary SLA columns on requests** → rejected: separate `sla_trackers` keeps aggregate lean and policy snapshotting explicit.

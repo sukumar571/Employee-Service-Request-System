@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Only a manager or admin may change the priority of a request",
+    "request_id": "90745ee2-1a9c-460c-a2ae-558e4afcc269"
+  }
+}

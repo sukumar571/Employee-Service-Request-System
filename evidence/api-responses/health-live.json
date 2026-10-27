@@ -8,18 +8,18 @@
     "status_text": "OK",
     "headers": {
       "content-type": "application/json; charset=utf-8",
-      "x-request-id": "1854a4ee-2516-4df4-9f0a-cee45f59277d",
+      "x-request-id": "f4325100-1b8f-4ade-b7d7-7360b2122b29",
       "x-content-type-options": "nosniff",
       "cache-control": null
     },
-    "elapsed_ms": 15,
+    "elapsed_ms": 17,
     "body": {
       "data": {
         "status": "ok",
         "service": "esrs-api",
         "version": "0.1.0",
         "environment": "development",
-        "timestamp": "2026-10-25T11:10:04.442Z"
+        "timestamp": "2026-10-27T18:48:30.500Z"
       }
     }
   }

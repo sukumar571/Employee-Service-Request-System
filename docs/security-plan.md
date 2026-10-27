@@ -41,8 +41,8 @@ STRIDE walkthrough per module is a living table in each module README; the plan 
 
 1. Middleware authenticates → `AuthContext`.
 2. `domain/rbac/policy.ts` — pure `can(actor, action, resourceContext)`; **default-deny**; action list versioned in `shared`.
-3. **Visibility is a query constraint**, applied inside repository SQL (team scoping, owner-only drafts, internal-comment exclusion) — UI hiding is convenience, not control (AC-5).
-4. Object-level checks on every single-resource path (IDOR tests: employee requests another's ticket from a different team ⇒ 403/404 — 404 chosen for existence-hiding on cross-team reads).
+3. **Visibility is a query constraint**, applied inside repository SQL (team scoping, owner-only drafts, internal-comment exclusion) — UI hiding is convenience, not control (AC-5). The exclusion covers *metadata* too: a `comment_added` marker in `request_events` carries a comment's visibility and length, so it is filtered out of the `events` trail for anyone below `agent` as well as out of the thread and the timeline — otherwise a staff-only note would announce its existence on a ticket it was written to keep private.
+4. Object-level checks on every single-resource path (IDOR tests: employee requests another's ticket from a different team ⇒ 403/404 — 404 chosen for existence-hiding on cross-team reads). One documented ordering exception: the comment-write role gate (`comment.internal`) is evaluated **before** the row is read, so an employee trying to leave an internal note on a ticket outside their scope gets a 403 that names only their role. It reveals no row data, but it does not answer with the 404 the rest of the API uses (`api-specification.md` §7).
 5. Role change / deactivation guards: last-admin rule, open-ticket rule (transactional check).
 6. Forced password-change gate: middleware blocks everything except `/auth/*` when `must_change_password`.
 
@@ -51,8 +51,8 @@ Permission-matrix integration tests (requirements §7 table → test-plan §6 SE
 ## 5. Input validation & output safety
 
 - **Zod everywhere** (body/query/params); unknown keys stripped (`strict()`); query length caps (q ≤ 200, page_size ≤ 100).
-- SQL: `pg` parameterized only; the query builder of the repository layer rejects non-parameter literals by convention + lint rule; ILIKE wildcards escaped (`%`,`_`,`\`).
-- XSS: React escapes by default; `dangerouslySetInnerHTML` banned by ESLint; description rendering keeps newlines via CSS, not HTML.
+- SQL: `pg` parameterized only; every statement in the repository adapters is a fixed string with `$n` placeholders and a separate params array, so request data never reaches the text of a query. `ORDER BY` is the one place a column cannot be bound, so the sort key is matched against a whitelist and mapped to a fixed SQL fragment; ILIKE wildcards escaped (`%`,`_`,`\`).
+- XSS: React escapes by default; `dangerouslySetInnerHTML` is banned by ESLint (`no-restricted-syntax` on `JSXAttribute[name.name="dangerouslySetInnerHTML"]`, frontend files), and a component test asserts a markup-bearing comment body produces no element in the DOM; description rendering keeps newlines via CSS, not HTML.
 - Uploads: extension allowlist **and** magic-byte check (`file-type`); size caps (10 MB/file, 20 MB body); filename stored sanitized, served from `Content-Disposition` with original name escaped; files **never** executed (volume mounted `noexec` where host allows) and not served inline.
 - CSV export: prefix spreadsheet formula injection (`=`,`+`,`-`,`@`) with `'`; row cap.
 - Logs: email/IP partial-mask in logs at INFO; full only at DEBUG in non-prod.
@@ -73,6 +73,8 @@ Permission-matrix integration tests (requirements §7 table → test-plan §6 SE
 ## 8. Security logging & monitoring
 
 - `audit_logs` for: login success/fail summary (daily rollup to avoid noise), role/user changes, SLA policy edits, priority changes, assignment changes, permission-denied (403) events with actor+route.
+- **History is append-only.** Rows describing a request change are written in the same transaction as the change (a failed audit insert rolls the operation back), and migration 017 blocks `UPDATE`/`DELETE`/`TRUNCATE` on `audit_logs` and `request_events` plus re-attribution of a comment's author or instant. There is no read, update or delete route for audit rows at all — `GET /audit-logs` is not mounted and the resulting 404 is captured in `evidence/`, not merely asserted (`api-specification.md` §12).
+- **Nothing sensitive is recorded.** Passwords, tokens and full comment bodies never enter `audit_logs`; a comment write stores a summary (length, visibility, id) and credentials are redacted at the sink. The known gap: an actor who can read the database directly also has `GRANT ALL` on it today, so the trigger tier is defence against application bugs and honest about not being tamper-proof.
 - Alerting (MVP): notification to admins on ≥ 20 failed logins/hour; refresh-reuse events always notify affected user.
 - Log retention: stdout → host rotation (size-based), 30 days.
 

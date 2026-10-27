@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "CONFLICT",
+    "message": "Expected version 0 but the request is at version 1",
+    "details": [
+      {
+        "path": "version",
+        "message": "current version is 1"
+      }
+    ],
+    "request_id": "0040bd00-48be-4809-a71d-41060b1ba97e"
+  }
+}

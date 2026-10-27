@@ -44,7 +44,13 @@ export class PostgresRefreshTokenStore implements RefreshTokenStore {
       `INSERT INTO refresh_tokens (user_id, family_id, token_hash, parent_token_hash, expires_at)
        VALUES ($1::bigint, $2::uuid, $3, $4, $5)
        RETURNING ${COLUMNS}`,
-      [token.userId, token.familyId, token.tokenHash, token.parentTokenHash ?? null, token.expiresAt],
+      [
+        token.userId,
+        token.familyId,
+        token.tokenHash,
+        token.parentTokenHash ?? null,
+        token.expiresAt,
+      ],
     );
     const row = result.rows[0];
     if (!row) throw new AppError('INTERNAL', 'Refresh-token insert returned no row');

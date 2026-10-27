@@ -141,6 +141,20 @@ export default tseslint.config(
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      /**
+       * `docs/security-plan.md` §5 claims `dangerouslySetInnerHTML` is banned by ESLint, so the rule has
+       * to exist for the claim to be true. User-written content (comment bodies, timeline details, titles)
+       * reaches the DOM as React text children and is escaped on the way in; rendering it raw would turn
+       * a stored string into markup (`docs/api-specification.md` §7.4).
+       */
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXAttribute[name.name="dangerouslySetInnerHTML"]',
+          message:
+            'Never inject raw HTML — render content as React children so it is escaped (security-plan.md §5).',
+        },
+      ],
       'no-restricted-imports': [
         'error',
         {

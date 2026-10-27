@@ -1,0 +1,258 @@
+{
+  "data": [
+    {
+      "id": "7",
+      "event_type": "created",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "draft": false,
+        "priority": "high"
+      },
+      "created_at": "2026-10-27T18:37:35.587Z",
+      "kind": "event"
+    },
+    {
+      "id": "8",
+      "event_type": "submitted",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "request_number": "REQ-2026-000001"
+      },
+      "created_at": "2026-10-27T18:37:35.587Z",
+      "kind": "event"
+    },
+    {
+      "id": "11",
+      "event_type": "assigned",
+      "actor": {
+        "id": "3",
+        "full_name": "Demo Manager"
+      },
+      "actor_role": "manager",
+      "from_status": "submitted",
+      "to_status": "assigned",
+      "detail": {
+        "reason": "Hardware queue owner this week",
+        "assignee_id": "2"
+      },
+      "created_at": "2026-10-27T18:37:36.580Z",
+      "kind": "event"
+    },
+    {
+      "id": "1",
+      "event_type": "comment_added",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "body": "The boot loop came back this morning after the second reboot.",
+        "comment_id": "1",
+        "visibility": "public",
+        "is_post_closure": false
+      },
+      "created_at": "2026-10-27T18:37:36.917Z",
+      "kind": "comment"
+    },
+    {
+      "id": "2",
+      "event_type": "comment_added",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "body": "Vendor RMA 4471 is open; the replacement part ships Thursday.",
+        "comment_id": "2",
+        "visibility": "internal",
+        "is_post_closure": false
+      },
+      "created_at": "2026-10-27T18:37:36.963Z",
+      "kind": "comment"
+    },
+    {
+      "id": "14",
+      "event_type": "priority_changed",
+      "actor": {
+        "id": "3",
+        "full_name": "Demo Manager"
+      },
+      "actor_role": "manager",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "to": "critical",
+        "from": "high",
+        "reason": "Client demo is blocked; escalated per the account plan"
+      },
+      "created_at": "2026-10-27T18:37:37.017Z",
+      "kind": "event"
+    },
+    {
+      "id": "15",
+      "event_type": "started",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": "assigned",
+      "to_status": "in_progress",
+      "detail": {},
+      "created_at": "2026-10-27T18:37:37.097Z",
+      "kind": "event"
+    },
+    {
+      "id": "16",
+      "event_type": "placed_on_hold",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": "in_progress",
+      "to_status": "on_hold",
+      "detail": {
+        "reason": "Waiting for the vendor to ship the part"
+      },
+      "created_at": "2026-10-27T18:37:37.150Z",
+      "kind": "event"
+    },
+    {
+      "id": "17",
+      "event_type": "resumed",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": "on_hold",
+      "to_status": "in_progress",
+      "detail": {},
+      "created_at": "2026-10-27T18:37:37.205Z",
+      "kind": "event"
+    },
+    {
+      "id": "18",
+      "event_type": "resolved",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": "in_progress",
+      "to_status": "resolved",
+      "detail": {
+        "reason": "Blocked from the client demo rehearsal",
+        "resolution_note": "Replaced the failed SSD and re-imaged from the golden build."
+      },
+      "created_at": "2026-10-27T18:37:37.261Z",
+      "kind": "event"
+    },
+    {
+      "id": "19",
+      "event_type": "closed",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": "resolved",
+      "to_status": "closed",
+      "detail": {},
+      "created_at": "2026-10-27T18:37:37.316Z",
+      "kind": "event"
+    },
+    {
+      "id": "20",
+      "event_type": "reopened",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": "closed",
+      "to_status": "assigned",
+      "detail": {
+        "reason": "The same fault returned the next morning"
+      },
+      "created_at": "2026-10-27T18:37:37.401Z",
+      "kind": "event"
+    },
+    {
+      "id": "21",
+      "event_type": "resolved",
+      "actor": {
+        "id": "2",
+        "full_name": "Demo Agent"
+      },
+      "actor_role": "agent",
+      "from_status": "assigned",
+      "to_status": "resolved",
+      "detail": {
+        "reason": "Second attempt after the reopen",
+        "resolution_note": "Seated the SSD and re-ran the firmware update; the boot loop is gone."
+      },
+      "created_at": "2026-10-27T18:37:37.450Z",
+      "kind": "event"
+    },
+    {
+      "id": "22",
+      "event_type": "closed",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": "resolved",
+      "to_status": "closed",
+      "detail": {
+        "reason": "Verified working over two days"
+      },
+      "created_at": "2026-10-27T18:37:37.520Z",
+      "kind": "event"
+    },
+    {
+      "id": "3",
+      "event_type": "comment_added",
+      "actor": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "actor_role": "employee",
+      "from_status": null,
+      "to_status": null,
+      "detail": {
+        "body": "Confirmed stable over two days of normal use. Thank you.",
+        "comment_id": "3",
+        "visibility": "public",
+        "is_post_closure": true
+      },
+      "created_at": "2026-10-27T18:37:37.598Z",
+      "kind": "comment"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "page_size": 50,
+    "total": 15
+  }
+}

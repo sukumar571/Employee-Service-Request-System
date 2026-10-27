@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "limit",
+        "message": "Too big: expected number to be <=200"
+      }
+    ],
+    "request_id": "b3fb786c-faec-4879-be71-243fa8e3ed6c"
+  }
+}

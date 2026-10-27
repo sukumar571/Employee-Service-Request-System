@@ -8,7 +8,7 @@ Design rationale lives in [`docs/database-design.md`](../docs/database-design.md
 
 ```
 database/
-├── migrations/            # 001…014, applied in filename order
+├── migrations/            # 001…017, applied in filename order
 │   └── 0NN_topic.sql       # "-- Up Migration" / "-- Down Migration" sections
 ├── seeds/                  # reference data + demo data (safe to re-run)
 ├── scripts/
@@ -44,7 +44,9 @@ explains how to configure it instead of throwing.
 3. Add-only columns must carry a `DEFAULT` or a backfill step, so a deploy never locks reads.
 4. Lifecycle rules are **not** encoded as triggers: the state machine in
    `backend/src/domain/request/stateMachine.ts` is the authority, the database keeps cheap
-   `CHECK`s and foreign keys.
+   `CHECK`s and foreign keys. Besides 015's `set_updated_at()` maintainers, the only triggers in
+   the schema are 017's append-only guards on `audit_logs`/`request_events` and its
+   comment-provenance freeze; they protect history and enforce no business rule.
 5. Enum labels must match `@esrs/shared`. The parity test fails the build if they diverge.
 
 ## Seeds and credentials

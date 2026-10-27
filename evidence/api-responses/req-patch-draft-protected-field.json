@@ -1,0 +1,17 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "status",
+        "message": "Unrecognized key: \"status\""
+      },
+      {
+        "path": "(root)",
+        "message": "Provide at least one field to change"
+      }
+    ],
+    "request_id": "1e4ce682-3f24-49ff-ad7f-c5cdfbbff811"
+  }
+}

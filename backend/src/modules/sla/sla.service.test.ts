@@ -8,7 +8,7 @@ import { AppError } from '../../lib/errors/appError.js';
 import { FixedClock } from '../../domain/ports/clock.js';
 import { RecordingAuditSink } from '../../ports/audit.js';
 import { describe, expect, it } from 'vitest';
-import { InMemorySlaPolicyRepository } from './sla.repository.memory.js';
+import { InMemorySlaPolicyRepository, defaultRecords } from './sla.repository.memory.js';
 import type { SlaPolicyRecord } from './sla.repository.js';
 import { SlaService } from './sla.service.js';
 
@@ -24,15 +24,19 @@ const FRI_1830 = IST('2026-10-30T18:30:00+05:30'); // Friday, after the window c
 const manager = { userId: 'user-900', role: 'manager' as const };
 const reason = 'Retargeted after the Q1 capacity review';
 
+/**
+ * The audit sink is a repository dependency, not a service one: the `sla_policy.updated` row is handed
+ * to `save()` and written by whoever writes the policy, so the two can share a transaction.
+ */
 function service(now = MON_10) {
   const clock = new FixedClock(now);
   const audit = new RecordingAuditSink();
-  const repository = new InMemorySlaPolicyRepository(clock);
+  const repository = new InMemorySlaPolicyRepository(clock, defaultRecords(), audit);
   return {
     clock,
     audit,
     repository,
-    sla: new SlaService({ repository, clock, audit }),
+    sla: new SlaService({ repository, clock }),
   };
 }
 
@@ -150,9 +154,8 @@ describe('SlaService.updatePolicy (ST-403)', () => {
       business_hours: DEFAULT_BUSINESS_HOURS,
     };
     const sla = new SlaService({
-      repository: new InMemorySlaPolicyRepository(clock, [partial]),
+      repository: new InMemorySlaPolicyRepository(clock, [partial], new RecordingAuditSink()),
       clock,
-      audit: new RecordingAuditSink(),
     });
     await expect(sla.getPolicy('critical')).rejects.toMatchObject({ code: 'NOT_FOUND' });
   });

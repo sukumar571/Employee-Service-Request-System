@@ -25,6 +25,12 @@ import { createAuthRouter } from './modules/auth/auth.routes.js';
 import { createUsersRouter } from './modules/auth/users.routes.js';
 import { createHealthRouter } from './modules/health/health.routes.js';
 import { createMetaRouter } from './modules/meta/meta.routes.js';
+import { InMemoryRequestRepository } from './modules/request/request.repository.memory.js';
+import { PostgresRequestRepository } from './modules/request/request.repository.pg.js';
+import type { RequestRepository } from './modules/request/request.repository.js';
+import { RequestActivityService } from './modules/request/request.activity.service.js';
+import { createRequestRouter } from './modules/request/request.routes.js';
+import { RequestService } from './modules/request/request.service.js';
 import { InMemorySlaPolicyRepository } from './modules/sla/sla.repository.memory.js';
 import { PostgresSlaPolicyRepository } from './modules/sla/sla.repository.pg.js';
 import type { SlaPolicyRepository } from './modules/sla/sla.repository.js';
@@ -41,6 +47,8 @@ export interface AppDependencies {
   readonly database: Database;
   readonly clock?: Clock;
   readonly slaRepository?: SlaPolicyRepository;
+  /** Overrides the `requests` adapter (tests seed an in-memory repository; else memory-or-Postgres). */
+  readonly requestRepository?: RequestRepository;
   readonly audit?: AuditSink;
   /** Overrides the `users` adapter (tests seed an in-memory repository; else memory-or-Postgres). */
   readonly userRepository?: UserRepository;
@@ -57,6 +65,8 @@ export interface BuiltApp {
   readonly app: Express;
   readonly services: {
     readonly sla: SlaService;
+    readonly request: RequestService;
+    readonly activity: RequestActivityService;
     readonly auth: AuthService;
     readonly clock: Clock;
     readonly audit: AuditSink;
@@ -67,15 +77,15 @@ export function createApp(deps: AppDependencies): BuiltApp {
   const { config, logger, database } = deps;
   const clock = deps.clock ?? systemClock;
 
+  const audit: AuditSink =
+    deps.audit ??
+    (database.configured ? new PostgresAuditSink(database, logger) : new RecordingAuditSink()); // no database yet: keep the trail visible in memory
+
   const slaRepository =
     deps.slaRepository ??
     (database.configured
       ? new PostgresSlaPolicyRepository(database)
-      : new InMemorySlaPolicyRepository(clock));
-
-  const audit: AuditSink =
-    deps.audit ??
-    (database.configured ? new PostgresAuditSink(database, logger) : new RecordingAuditSink()); // no database yet: keep the trail visible in memory
+      : new InMemorySlaPolicyRepository(clock, undefined, audit));
 
   const userRepository =
     deps.userRepository ??
@@ -87,8 +97,38 @@ export function createApp(deps: AppDependencies): BuiltApp {
       ? new PostgresRefreshTokenStore(database)
       : new InMemoryRefreshTokenStore(clock));
 
-  const slaService = new SlaService({ repository: slaRepository, clock, audit });
-  const authService = new AuthService({ users: userRepository, refresh: refreshStore, clock, audit, config });
+  // The `UserRepository` structurally satisfies `UserDirectory`: the request module reads display
+  // names and role/team scoping, never credentials, so it never imports another module's repository.
+  const requestRepository =
+    deps.requestRepository ??
+    (database.configured
+      ? new PostgresRequestRepository(database)
+      : // In memory mode the repository owns the audit sink: request writes describe their audit rows
+        // and this adapter records them, which is what keeps `audit.entries` meaningful without a
+        // database. On Postgres the same rows are inserted on the transaction's own client instead.
+        new InMemoryRequestRepository({ clock, directory: userRepository, audit }));
+
+  const slaService = new SlaService({ repository: slaRepository, clock });
+  const requestService = new RequestService({
+    repository: requestRepository,
+    directory: userRepository,
+    clock,
+    sla: slaService,
+  });
+  // Comments and the activity trail are a second service over the same aggregate: they reuse the
+  // request module's row-scope rule, so a thread can never be read by someone who cannot see the ticket.
+  const activityService = new RequestActivityService({
+    repository: requestRepository,
+    requests: requestService,
+    clock,
+  });
+  const authService = new AuthService({
+    users: userRepository,
+    refresh: refreshStore,
+    clock,
+    audit,
+    config,
+  });
 
   const app = express();
   app.disable('x-powered-by');
@@ -131,6 +171,12 @@ export function createApp(deps: AppDependencies): BuiltApp {
           '/auth/me',
           '/auth/change-password',
           '/users',
+          '/requests',
+          '/requests/:id',
+          '/requests/:id/events',
+          '/requests/:id/comments',
+          '/requests/:id/timeline',
+          '/requests/:id/{submit,claim,assign,start,hold,resume,resolve,close,reopen,cancel,transition}',
           '/sla/policies',
           '/sla/policies/:priority',
         ],
@@ -157,11 +203,24 @@ export function createApp(deps: AppDependencies): BuiltApp {
     ? [deps.identity]
     : [authenticate(authService), passwordChangeGate()];
   api.use('/sla', businessIdentity, createSlaRouter(slaService));
+  // The comment and timeline routes mount inside `/requests/:id` (one identity gate, no double
+  // authentication), so the request router owns the whole `/requests` surface.
+  api.use('/requests', businessIdentity, createRequestRouter(requestService, activityService));
 
   app.use(API_BASE_PATH, api);
 
   app.use(notFoundHandler);
   app.use(errorHandler(logger));
 
-  return { app, services: { sla: slaService, auth: authService, clock, audit } };
+  return {
+    app,
+    services: {
+      sla: slaService,
+      request: requestService,
+      activity: activityService,
+      auth: authService,
+      clock,
+      audit,
+    },
+  };
 }

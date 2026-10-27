@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INVALID_ASSIGNEE",
+    "message": "User '1' has role 'employee' and cannot hold tickets",
+    "request_id": "b6b7e62e-c8da-4ea0-b033-18a6b362e034"
+  }
+}

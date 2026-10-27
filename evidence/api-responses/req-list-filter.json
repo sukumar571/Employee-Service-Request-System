@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "id": "4",
+      "request_number": "REQ-2026-000001",
+      "title": "Laptop will not boot after Tuesday patch",
+      "status": "submitted",
+      "priority": "high",
+      "category": {
+        "id": "1",
+        "name": "Information Technology"
+      },
+      "sub_category": {
+        "id": "1",
+        "name": "Hardware"
+      },
+      "requester": {
+        "id": "1",
+        "full_name": "Demo Employee"
+      },
+      "assignee": null,
+      "department": {
+        "id": "1",
+        "name": "Information Technology"
+      },
+      "submitted_at": "2026-10-27T18:37:35.587Z",
+      "created_at": "2026-10-27T18:37:35.659Z",
+      "updated_at": "2026-10-27T18:37:35.659Z",
+      "resolved_at": null,
+      "closed_at": null,
+      "reopen_count": 0,
+      "sla": {
+        "first_response_due_at": "2026-10-28T05:30:00.000Z",
+        "resolution_due_at": "2026-10-30T09:30:00.000Z",
+        "resolution_business_minutes_remaining": null,
+        "state": "safe"
+      },
+      "version": 0,
+      "allowed_actions": [
+        "cancel"
+      ]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "page_size": 20,
+    "total": 1
+  }
+}

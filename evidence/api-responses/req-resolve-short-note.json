@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "resolution_note",
+        "message": "Resolution note must be at least 20 characters"
+      }
+    ],
+    "request_id": "b7bc83a7-b422-4c94-ab32-86f33542965c"
+  }
+}

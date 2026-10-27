@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "author_id.created_at",
+        "message": "Unrecognized keys: \"author_id\", \"created_at\""
+      }
+    ],
+    "request_id": "1be92751-ad42-4341-84b1-a5b8d50d523a"
+  }
+}

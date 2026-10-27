@@ -27,7 +27,10 @@ const readMigration = async (name: string): Promise<string> =>
 const enumsSql = await readMigration('002_enums.sql');
 const slaSql = await readMigration('010_sla_policies_trackers.sql');
 const alignmentSql = await readMigration('015_schema_alignment_columns.sql');
-const referenceSeedSql = await readFile(new URL('../seeds/001_reference_data.sql', import.meta.url), 'utf8');
+const referenceSeedSql = await readFile(
+  new URL('../seeds/001_reference_data.sql', import.meta.url),
+  'utf8',
+);
 const migrationNames = (await readdir(migrationsDir))
   .filter((name) => name.endsWith('.sql'))
   .toSorted();
@@ -91,7 +94,9 @@ describe('SLA defaults (010_sla_policies_trackers.sql) match @esrs/shared', () =
 describe('schema alignment (015_schema_alignment_columns.sql) match the spec + backend', () => {
   it('gives categories a description and a default SLA configuration', () => {
     expect(alignmentSql).toMatch(/ADD COLUMN description TEXT/);
-    expect(alignmentSql).toMatch(/ADD COLUMN default_resolution_hours INT CHECK \(default_resolution_hours > 0\)/);
+    expect(alignmentSql).toMatch(
+      /ADD COLUMN default_resolution_hours INT CHECK \(default_resolution_hours > 0\)/,
+    );
     expect(referenceSeedSql).toContain('default_resolution_hours');
   });
 
@@ -103,7 +108,14 @@ describe('schema alignment (015_schema_alignment_columns.sql) match the spec + b
 
   it('keeps updated_at honest with a shared trigger', () => {
     expect(alignmentSql).toContain('CREATE FUNCTION set_updated_at()');
-    for (const table of ['users', 'categories', 'requests', 'comments', 'sla_policies', 'sla_trackers']) {
+    for (const table of [
+      'users',
+      'categories',
+      'requests',
+      'comments',
+      'sla_policies',
+      'sla_trackers',
+    ]) {
       expect(alignmentSql, `missing updated_at trigger on ${table}`).toContain(`ON ${table} `);
     }
   });

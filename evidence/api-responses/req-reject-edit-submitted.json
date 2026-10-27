@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "CONFLICT",
+    "message": "Only a draft can be edited; this request is 'submitted'",
+    "request_id": "1a58a39b-904a-44a0-8fdb-f2571e225fbf"
+  }
+}

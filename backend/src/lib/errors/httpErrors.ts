@@ -9,13 +9,26 @@ export const badRequest = (message = 'Malformed request'): AppError =>
 /** Element type of `ZodError.issues`; zod 4 does not export a standalone alias for it. */
 type ZodIssue = z.ZodError['issues'][number];
 
+/**
+ * A `.strict()` object reports an unrecognized key at the root, so the offending name would only
+ * survive inside the prose of `issue.message`. Clients that highlight fields need the path, and a
+ * rejected protected workflow field (`status`, `assignee_id`, …) is exactly the case where naming the
+ * key in `path` is the whole point of the response.
+ */
+const issuePath = (issue: ZodIssue): string => {
+  const joined = issue.path.join('.');
+  if (joined) return joined;
+  if (issue.code === 'unrecognized_keys' && issue.keys.length > 0) return issue.keys.join('.');
+  return '(root)';
+};
+
 export const validationError = (
   issues: readonly ZodIssue[],
   message = 'Invalid request payload',
 ): AppError =>
   new AppError('VALIDATION_ERROR', message, {
     details: issues.map((issue) => ({
-      path: issue.path.join('.') || '(root)',
+      path: issuePath(issue),
       message: issue.message,
     })),
   });

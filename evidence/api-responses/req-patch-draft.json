@@ -1,0 +1,45 @@
+{
+  "data": {
+    "id": "5",
+    "request_number": null,
+    "title": "Needs a second monitor for the finance reconciliation",
+    "status": "draft",
+    "priority": "medium",
+    "category": {
+      "id": "1",
+      "name": "Information Technology"
+    },
+    "sub_category": {
+      "id": "5",
+      "name": "Peripherals"
+    },
+    "requester": {
+      "id": "1",
+      "full_name": "Demo Employee"
+    },
+    "assignee": null,
+    "department": {
+      "id": "1",
+      "name": "Information Technology"
+    },
+    "submitted_at": null,
+    "created_at": "2026-10-27T18:37:35.892Z",
+    "updated_at": "2026-10-27T18:37:35.960Z",
+    "resolved_at": null,
+    "closed_at": null,
+    "reopen_count": 0,
+    "sla": null,
+    "version": 1,
+    "allowed_actions": [
+      "submit",
+      "cancel"
+    ],
+    "description": "Two-factor spreadsheet work needs a second screen. Requesting one from IT.",
+    "status_reason": null,
+    "resolution_note": null,
+    "cancelled_at": null,
+    "requester_inactive": false,
+    "reopened_from": null,
+    "can_comment": true
+  }
+}

@@ -38,7 +38,11 @@ export function authenticate(service: AuthService): RequestHandler {
     try {
       const claims = service.verifyAccessToken(token);
       req.authClaims = claims;
-      req.auth = { userId: claims.userId, role: claims.role, teamCategoryId: claims.teamCategoryId };
+      req.auth = {
+        userId: claims.userId,
+        role: claims.role,
+        teamCategoryId: claims.teamCategoryId,
+      };
       req.authMustChangePassword = claims.mustChangePassword;
       // Correlate subsequent log/audit rows with the authenticated subject.
       const ctx = getRequestContext();

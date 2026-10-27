@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "sub_category_id",
+        "message": "Sub-category does not belong to the selected category"
+      }
+    ],
+    "request_id": "2c1dfb54-dad3-4303-b8bd-b5fc883e9ddc"
+  }
+}

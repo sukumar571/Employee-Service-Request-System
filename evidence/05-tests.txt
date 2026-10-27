@@ -11,13 +11,13 @@ npm run test
 
  RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/shared
 
- ✓ src/domain/requestTransitions.test.ts (15 tests) 16ms
- ✓ src/dto/contract.test.ts (11 tests) 21ms
+ ✓ src/domain/requestTransitions.test.ts (15 tests) 12ms
+ ✓ src/dto/contract.test.ts (11 tests) 41ms
 
  Test Files  2 passed (2)
       Tests  26 passed (26)
-   Start at  16:39:44
-   Duration  559ms (import 77%, transform 12%, tests 7%, worker 3%)
+   Start at  00:17:41
+   Duration  1.88s (import 83%, transform 14%, tests 2%, worker 1%)
 
 
 > @esrs/database@0.1.0 test
@@ -26,12 +26,12 @@ npm run test
 
  RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/database
 
- ✓ test/enumParity.test.ts (16 tests) 30ms
+ ✓ test/enumParity.test.ts (20 tests) 60ms
 
  Test Files  1 passed (1)
-      Tests  16 passed (16)
-   Start at  16:39:46
-   Duration  588ms (import 74%, transform 15%, tests 9%, worker 2%)
+      Tests  20 passed (20)
+   Start at  00:17:44
+   Duration  1.12s (transform 54%, import 35%, tests 9%, worker 2%)
 
 
 > @esrs/backend@0.1.0 test
@@ -40,22 +40,30 @@ npm run test
 
  RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/backend
 
- ✓ src/domain/sla/businessHours.test.ts (15 tests) 36ms
- ✓ src/modules/sla/sla.service.test.ts (12 tests) 59ms
- ✓ src/config/env.test.ts (11 tests) 23ms
- ✓ src/domain/ports/clock.test.ts (5 tests) 11ms
- ✓ src/domain/rbac/policy.test.ts (12 tests) 16ms
- ✓ src/app.test.ts (18 tests) 728ms
- ✓ src/domain/request/stateMachine.test.ts (12 tests) 15ms
- ✓ src/config/version.test.ts (2 tests) 6ms
+ ✓ src/modules/auth/auth.service.test.ts (13 tests) 583ms
+   ✓ AuthService.login (4)
+     ✓ rejects an unknown email with the SAME generic message as a wrong password (no enumeration) 336ms
+ ✓ src/app.test.ts (18 tests) 548ms
+ ✓ src/auth.http.test.ts (14 tests) 1280ms
+   ✓ POST /auth/login (5)
+     ✓ gives the same generic 401 for an unknown email and a wrong password 393ms
+ ✓ src/modules/sla/sla.service.test.ts (12 tests) 71ms
+ ✓ src/domain/sla/businessHours.test.ts (15 tests) 54ms
+ ✓ src/config/env.test.ts (11 tests) 55ms
+ ✓ src/ports/audit.test.ts (11 tests) 21ms
+ ✓ src/domain/request/stateMachine.test.ts (13 tests) 18ms
+ ✓ src/domain/rbac/policy.test.ts (12 tests) 13ms
+ ✓ src/domain/ports/clock.test.ts (5 tests) 9ms
+ ✓ src/config/version.test.ts (2 tests) 7ms
+ ✓ src/request.http.test.ts (149 tests) 4453ms
 
- Test Files  8 passed (8)
-      Tests  87 passed (87)
-   Start at  16:39:47
-   Duration  2.53s (import 65%, tests 23%, transform 9%, worker 3%)
+ Test Files  12 passed (12)
+      Tests  275 passed (275)
+   Start at  00:17:46
+   Duration  10.08s (import 59%, tests 30%, transform 11%, worker 1%)
 
-    Isolate  8 workers spawned · ~406ms startup each (spawn + environment, per file)
-             at least ~676ms faster with isolate: false — reuses workers across files instead of one per file
+    Isolate  12 workers spawned · ~350ms startup each (spawn + environment, per file)
+             at least ~1.05s faster with isolate: false — reuses workers across files instead of one per file
 
 
 > @esrs/frontend@0.1.0 test
@@ -64,16 +72,26 @@ npm run test
 
  RUN  v5.0.5 E:/Users/sudhe/Employee Service Request System/frontend
 
- ✓ src/lib/apiClient.test.ts (7 tests) 26ms
- ✓ src/components/Badge.test.tsx (5 tests) 371ms
- ✓ src/pages/LifecyclePage.test.tsx (6 tests) 840ms
+ ✓ src/pages/RequestActivityPage.test.tsx (4 tests) 987ms
+   ✓ RequestActivityPage (4)
+     ✓ loads the timeline and the comment thread for the routed request 843ms
+ ✓ src/pages/LifecyclePage.test.tsx (6 tests) 1827ms
    ✓ LifecyclePage (6)
-     ✓ lists the outgoing transitions of the selected status 521ms
+     ✓ lists the outgoing transitions of the selected status 1314ms
+ ✓ src/components/Activity.test.tsx (15 tests) 2192ms
+   ✓ CommentThread (11)
+     ✓ shows the thread oldest-first with the author and the stored instant 1186ms
+ ✓ src/components/Badge.test.tsx (5 tests) 96ms
+ ✓ src/lib/apiClient.test.ts (7 tests) 20ms
 
- Test Files  3 passed (3)
-      Tests  18 passed (18)
-   Start at  16:39:51
-   Duration  4.28s (environment 61%, setup 13%, tests 12%, import 10%, transform 3%, worker 1%)
+ Test Files  5 passed (5)
+      Tests  37 passed (37)
+   Start at  00:17:57
+   Duration  19.33s (environment 69%, setup 14%, tests 10%, import 5%, transform 3%)
+
+Environment  jsdom was created 5 times · 36.66s total, 69% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
 
 
 [exit code 0]

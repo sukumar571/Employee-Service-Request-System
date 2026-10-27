@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "category_id",
+        "message": "Unknown category_id '999'"
+      }
+    ],
+    "request_id": "8509bab7-c4cc-42f6-ac3b-5b16196d22da"
+  }
+}

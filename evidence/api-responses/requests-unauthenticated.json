@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "http://localhost:4000/api/v1/requests"
+  },
+  "response": {
+    "status": 401,
+    "status_text": "Unauthorized",
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-request-id": "eed03f46-46fa-48ea-945f-b1ac26534b15",
+      "x-content-type-options": "nosniff",
+      "cache-control": null
+    },
+    "elapsed_ms": 9,
+    "body": {
+      "error": {
+        "code": "UNAUTHENTICATED",
+        "message": "Authentication is required for this operation",
+        "request_id": "eed03f46-46fa-48ea-945f-b1ac26534b15"
+      }
+    }
+  },
+  "explanation": "expected - the request collection requires a bearer token"
+}

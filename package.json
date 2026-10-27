@@ -31,7 +31,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
-    "verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "verify": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run build",
     "db:migrate": "npm run migrate --workspace @esrs/database",
     "db:rollback": "npm run rollback --workspace @esrs/database",
     "db:status": "npm run status --workspace @esrs/database",
@@ -41,7 +41,8 @@
     "db:make": "npm run make --workspace @esrs/database",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
-    "evidence": "node scripts/collect-evidence.mjs"
+    "evidence": "node scripts/collect-evidence.mjs",
+    "e2e:requests": "node scripts/e2e-requests.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

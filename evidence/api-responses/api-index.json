@@ -8,11 +8,11 @@
     "status_text": "OK",
     "headers": {
       "content-type": "application/json; charset=utf-8",
-      "x-request-id": "093b209a-444e-4cfc-8169-e1504a2bc010",
+      "x-request-id": "f0f0fa10-a5f8-4d2b-a22b-8bf94eca95a7",
       "x-content-type-options": "nosniff",
       "cache-control": null
     },
-    "elapsed_ms": 142,
+    "elapsed_ms": 133,
     "body": {
       "data": {
         "service": "esrs-api",
@@ -22,6 +22,18 @@
           "/health/live",
           "/health/ready",
           "/meta",
+          "/auth/login",
+          "/auth/refresh",
+          "/auth/logout",
+          "/auth/me",
+          "/auth/change-password",
+          "/users",
+          "/requests",
+          "/requests/:id",
+          "/requests/:id/events",
+          "/requests/:id/comments",
+          "/requests/:id/timeline",
+          "/requests/:id/{submit,claim,assign,start,hold,resume,resolve,close,reopen,cancel,transition}",
           "/sla/policies",
           "/sla/policies/:priority"
         ]

@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "2",
+    "request_id": "4",
+    "author": {
+      "id": "2",
+      "full_name": "Demo Agent"
+    },
+    "body": "Vendor RMA 4471 is open; the replacement part ships Thursday.",
+    "visibility": "internal",
+    "is_post_closure": false,
+    "created_at": "2026-10-27T18:37:36.963Z",
+    "updated_at": "2026-10-27T18:37:36.963Z"
+  }
+}

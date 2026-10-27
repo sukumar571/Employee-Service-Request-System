@@ -1,9 +1,4 @@
-import type {
-  NewUser,
-  UserListFilter,
-  UserRecord,
-  UserRepository,
-} from './user.repository.js';
+import type { NewUser, UserListFilter, UserRecord, UserRepository } from './user.repository.js';
 
 /**
  * In-memory `UserRepository` used when `DATABASE_URL` is absent and by the auth tests. It mirrors
@@ -75,12 +70,19 @@ export class InMemoryUserRepository implements UserRepository {
     return Promise.resolve();
   }
 
-  onLoginFailure(id: string, at: Date, maxFailures: number, lockoutMinutes: number): Promise<UserRecord> {
+  onLoginFailure(
+    id: string,
+    at: Date,
+    maxFailures: number,
+    lockoutMinutes: number,
+  ): Promise<UserRecord> {
     const current = this.rows.get(id);
     if (!current) return Promise.reject(new Error(`unknown_user:${id}`));
     const failedLoginCount = current.failedLoginCount + 1;
     const lockedUntil =
-      failedLoginCount >= maxFailures ? new Date(at.getTime() + lockoutMinutes * 60_000) : current.lockedUntil;
+      failedLoginCount >= maxFailures
+        ? new Date(at.getTime() + lockoutMinutes * 60_000)
+        : current.lockedUntil;
     const updated = this.mutate(id, { failedLoginCount, lockedUntil })!;
     return Promise.resolve(updated);
   }

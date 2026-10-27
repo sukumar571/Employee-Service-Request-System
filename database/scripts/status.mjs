@@ -15,7 +15,7 @@ export async function showStatus(databaseUrl) {
     const tableExists = await client.query(`SELECT to_regclass($1) AS name`, [migrationsTable]);
     const applied = new Set();
     if (tableExists.rows[0]?.name) {
-      const rows = await client.query(`SELECT name FROM ${migrationsTable} ORDER BY migration ASC`);
+      const rows = await client.query(`SELECT name FROM ${migrationsTable} ORDER BY id ASC`);
       for (const row of rows.rows) applied.add(row.name);
     }
 

@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "nonexistent",
+        "message": "Unrecognized key: \"nonexistent\""
+      }
+    ],
+    "request_id": "3d9a6de4-1017-4844-ac0d-77c5a8185b5b"
+  }
+}

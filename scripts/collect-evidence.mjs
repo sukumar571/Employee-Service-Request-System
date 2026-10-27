@@ -9,7 +9,7 @@
  *   npm run evidence                 # quality gates + API probes (expects servers to be running)
  *   npm run evidence -- --no-api     # quality gates only
  */
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
@@ -41,8 +41,7 @@ const probes = [
   {
     file: 'sla-policies.json',
     url: `${API_BASE}/sla/policies`,
-    // Expected until Phase 5 ships authentication: the identity gate fails closed.
-    note: 'expected - identity gate fails closed until Phase 5 ships auth',
+    note: 'expected - the identity gate fails closed, so an anonymous read is rejected',
   },
   {
     file: 'sla-policy-update-unauthenticated.json',
@@ -54,6 +53,18 @@ const probes = [
       resolution_minutes: 240,
       reason: 'evidence probe from collect-evidence.mjs',
     },
+  },
+  {
+    file: 'requests-unauthenticated.json',
+    url: `${API_BASE}/requests`,
+    note: 'expected - the request collection requires a bearer token',
+  },
+  {
+    file: 'request-create-unauthenticated.json',
+    url: `${API_BASE}/requests`,
+    method: 'POST',
+    note: 'expected - anonymous creation is rejected before any payload validation or DB write',
+    body: { title: 'Evidence probe', category_id: '1', priority: 'medium' },
   },
   {
     file: 'unknown-route-404.json',
@@ -72,6 +83,8 @@ const SCREENSHOT_NOTES = {
     'SLA policy page showing the intended fail-closed `UNAUTHENTICATED` / HTTP 401 notice',
   '10-screenshot-overview-second-capture.png':
     'Overview page, re-captured to confirm a stable render',
+  '11-activity-request-4-unauthenticated.png':
+    'Request activity page (`/requests/:id/activity`) showing the timeline, the comment form with its live character counter, and the intended fail-closed `UNAUTHENTICATED` / HTTP 401 notices for both reads',
 };
 
 /** Printed verbatim so the evidence shows which toolchain produced the results. */
@@ -229,7 +242,26 @@ async function collectScreenshots() {
   }
 }
 
+/**
+ * Inventory of the `req-*.json` captures taken by `npm run e2e:requests`. That driver is not run here
+ * (it needs a database behind the API and it writes tickets), so the collector reports what is on disk
+ * rather than re-capturing it: `req-index.json` lists one entry per HTTP call the walk made.
+ */
+async function collectRequestWalk() {
+  try {
+    const entries = await readdir(apiDir);
+    const captures = entries.filter(
+      (name) => /^req-.+\.json$/i.test(name) && name !== 'req-index.json',
+    );
+    const index = JSON.parse(await readFile(path.join(apiDir, 'req-index.json'), 'utf8'));
+    return { captures: captures.length, calls: Array.isArray(index) ? index.length : 0 };
+  } catch {
+    return null;
+  }
+}
+
 const screenshots = await collectScreenshots();
+const walk = await collectRequestWalk();
 
 const lines = [
   '# Verification evidence',
@@ -247,29 +279,40 @@ const lines = [
   '',
 ];
 
-if (screenshots.length > 0) {
+if (walk) {
   lines.push(
-    '## Screenshots',
+    '## Request-API lifecycle walk',
     '',
-    'Captured from the running portal in a browser (`http://localhost:5173`); these are the only',
-    'artifacts not produced by a command, so they are listed rather than re-generated here.',
-    '',
-    '| Screenshot | Shows |',
-    '| --- | --- |',
-    ...screenshots.map(
-      (name) => `| \`screenshots/${name}\` | ${SCREENSHOT_NOTES[name] ?? 'portal view'} |`,
-    ),
-    '',
-  );
-} else {
-  lines.push(
-    '## Screenshots',
-    '',
-    'No screenshots found in `evidence/screenshots/`. Capture the portal in a browser and add them',
-    'there; the next run of `npm run evidence` will index them automatically.',
+    `\`api-responses/\` also holds ${walk.captures} captures (${walk.calls} HTTP calls) written by`,
+    '`npm run e2e:requests` (`scripts/e2e-requests.mjs`). That driver is run separately because it',
+    'needs PostgreSQL behind the API and it creates real tickets. It asserts an expected status for',
+    'every call and exits non-zero if any of them differ, so a green run means the whole lifecycle —',
+    'creation, listing, filtering, editing, assignment, transitions, permissions, the comment thread',
+    '(including every rejection envelope quoted in `docs/api-specification.md` §7), the activity',
+    'timeline and the anonymous gates — behaved as documented, and that `GET /audit-logs` still answers',
+    '404 rather than exposing the audit table. `api-responses/req-index.json` is the per-call index.',
     '',
   );
 }
+
+lines.push(
+  '## Screenshots',
+  '',
+  'Captured from the running portal in a browser (`http://localhost:5173`); these are the only',
+  'artifacts not produced by a command, so they are listed rather than re-generated here.',
+  '',
+  '| Screenshot | Shows |',
+  '| --- | --- |',
+  ...(screenshots.length > 0
+    ? screenshots.map(
+        (name) => `| \`screenshots/${name}\` | ${SCREENSHOT_NOTES[name] ?? 'portal view'} |`,
+      )
+    : [
+        'No screenshots found in `evidence/screenshots/`. Capture the portal in a browser and add them',
+        'there; the next run of `npm run evidence` will index them automatically.',
+      ]),
+  '',
+);
 
 await writeFile(path.join(evidenceDir, 'README.md'), `${lines.join('\n')}\n`, 'utf8');
 

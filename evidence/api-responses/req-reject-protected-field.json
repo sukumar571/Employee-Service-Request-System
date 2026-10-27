@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "status",
+        "message": "Unrecognized key: \"status\""
+      }
+    ],
+    "request_id": "c103ae6a-dfd6-448e-ba29-913980f41c8a"
+  }
+}

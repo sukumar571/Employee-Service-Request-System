@@ -80,7 +80,9 @@ export class AuthService {
     // reveals whether the account exists (docs/security-plan.md §2, §4.2).
     if (!record) {
       await burnPasswordCompare(body.password);
-      await this.recordAuthEvent('auth.login.failed', 'unknown', email, { reason: 'no_such_account' });
+      await this.recordAuthEvent('auth.login.failed', 'unknown', email, {
+        reason: 'no_such_account',
+      });
       throw new AppError('INVALID_CREDENTIALS', 'Invalid email or password');
     }
 
@@ -90,15 +92,24 @@ export class AuthService {
 
     const passwordOk = await verifyPassword(body.password, record.passwordHash);
     if (!passwordOk) {
-      await this.users.onLoginFailure(record.id, now, this.config.auth.loginMaxFailures, this.config.auth.loginLockoutMinutes);
-      await this.recordAuthEvent('auth.login.failed', record.id, record.email, { reason: 'bad_password' });
+      await this.users.onLoginFailure(
+        record.id,
+        now,
+        this.config.auth.loginMaxFailures,
+        this.config.auth.loginLockoutMinutes,
+      );
+      await this.recordAuthEvent('auth.login.failed', record.id, record.email, {
+        reason: 'bad_password',
+      });
       throw new AppError('INVALID_CREDENTIALS', 'Invalid email or password');
     }
 
     // Active check runs only after a correct password, so a wrong-password probe cannot enumerate
     // disabled accounts. A deactivated user with the right password gets an explicit 403.
     if (!record.isActive) {
-      await this.recordAuthEvent('auth.login.blocked', record.id, record.email, { reason: 'inactive' });
+      await this.recordAuthEvent('auth.login.blocked', record.id, record.email, {
+        reason: 'inactive',
+      });
       throw forbidden('This account has been deactivated. Contact an administrator.');
     }
 
@@ -153,7 +164,10 @@ export class AuthService {
     await this.recordAuthEvent('auth.logout', presented.userId, '', { family: presented.familyId });
   }
 
-  async changePassword(claims: AccessClaims, body: { current_password?: string; new_password: string }): Promise<SafeUser> {
+  async changePassword(
+    claims: AccessClaims,
+    body: { current_password?: string; new_password: string },
+  ): Promise<SafeUser> {
     const record = await this.users.findById(claims.userId);
     if (!record) throw unauthorized();
 
@@ -230,14 +244,21 @@ export class AuthService {
       target.isActive &&
       ((patch.role !== undefined && patch.role !== 'admin') || patch.is_active === false);
     if (demotesAdmin && (await this.users.countActiveAdmins()) <= 1) {
-      throw new AppError('LAST_ADMIN_GUARD', 'Cannot remove or deactivate the last active administrator');
+      throw new AppError(
+        'LAST_ADMIN_GUARD',
+        'Cannot remove or deactivate the last active administrator',
+      );
     }
 
     const updated = await this.users.update(id, {
       ...(patch.full_name !== undefined ? { fullName: patch.full_name } : {}),
       ...(patch.role !== undefined ? { role: patch.role } : {}),
-      ...(patch.department_id !== undefined ? { departmentId: toIdOrNull(patch.department_id) } : {}),
-      ...(patch.team_category_id !== undefined ? { teamCategoryId: toIdOrNull(patch.team_category_id) } : {}),
+      ...(patch.department_id !== undefined
+        ? { departmentId: toIdOrNull(patch.department_id) }
+        : {}),
+      ...(patch.team_category_id !== undefined
+        ? { teamCategoryId: toIdOrNull(patch.team_category_id) }
+        : {}),
       ...(patch.is_active !== undefined ? { isActive: patch.is_active } : {}),
     });
     if (!updated) throw notFound('User');

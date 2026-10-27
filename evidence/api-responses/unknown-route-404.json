@@ -8,16 +8,16 @@
     "status_text": "Not Found",
     "headers": {
       "content-type": "application/json; charset=utf-8",
-      "x-request-id": "13872171-e308-4cba-ba93-b2f410bb6708",
+      "x-request-id": "0268172e-4363-48d8-ac5f-3d4ba183d249",
       "x-content-type-options": "nosniff",
       "cache-control": null
     },
-    "elapsed_ms": 19,
+    "elapsed_ms": 11,
     "body": {
       "error": {
         "code": "NOT_FOUND",
         "message": "Route GET /api/v1/does-not-exist not found",
-        "request_id": "13872171-e308-4cba-ba93-b2f410bb6708"
+        "request_id": "0268172e-4363-48d8-ac5f-3d4ba183d249"
       }
     }
   },

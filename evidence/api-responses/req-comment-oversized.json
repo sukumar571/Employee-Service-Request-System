@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "body",
+        "message": "A comment must be at most 5000 characters"
+      }
+    ],
+    "request_id": "e0d914f7-f9b9-477d-ad9c-bbc35d92e781"
+  }
+}

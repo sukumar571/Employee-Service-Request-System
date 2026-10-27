@@ -30,11 +30,15 @@ export function createLogger(config: AppConfig, overrides: pino.LoggerOptions = 
     timestamp: pino.stdTimeFunctions.isoTime,
     redact: { paths: REDACTED_PATHS, censor: '[redacted]' },
     // Human-readable logs locally, JSON everywhere else (Docker log driver expects JSON).
+    // `destination` is deliberately absent: thread-stream reads a string as a FILE PATH, so
+    // `destination: "1"` silently created a file called `1` in the working directory instead of
+    // writing to stdout. Omitting it keeps the default (stdout), which is what a 12-factor process
+    // must do for `npm run dev > api.log`, Docker and the evidence captures to work.
     ...(development && !process.env.VITEST
       ? {
           transport: {
             target: 'pino-pretty',
-            options: { colorize: true, destination: '1', translateTime: 'HH:MM:ss.lcp' },
+            options: { colorize: true, translateTime: 'HH:MM:ss.lcp' },
           },
         }
       : {}),

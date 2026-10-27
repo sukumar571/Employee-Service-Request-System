@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Role 'agent' may not reopen a request in status 'closed'",
+    "request_id": "d3271e2d-da2e-481f-8e4a-c6ff0e501875"
+  }
+}

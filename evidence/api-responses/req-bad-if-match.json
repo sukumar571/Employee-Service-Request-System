@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "BAD_REQUEST",
+    "message": "If-Match must be a version number, e.g. If-Match: \"3\"",
+    "request_id": "5a5450e0-e282-4f6b-ae0b-2aeac221f259"
+  }
+}

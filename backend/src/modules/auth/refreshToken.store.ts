@@ -5,7 +5,8 @@
  * the in-memory adapter runs it in tests.
  */
 
-export type RevokeReason = 'rotated' | 'reuse_detected' | 'logged_out' | 'admin_revoked' | 'expired';
+export type RevokeReason =
+  'rotated' | 'reuse_detected' | 'logged_out' | 'admin_revoked' | 'expired';
 
 export interface RefreshRecord {
   readonly id: string;

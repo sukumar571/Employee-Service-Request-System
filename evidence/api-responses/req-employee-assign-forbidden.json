@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "Role 'employee' may not perform 'request.assign'",
+    "request_id": "43e01c71-1354-4d07-a198-bf4b682e6fd6"
+  }
+}

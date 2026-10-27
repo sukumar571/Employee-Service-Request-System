@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Request '999999' not found",
+    "request_id": "eaecfbfb-1360-45ad-b6aa-e05418b30cc2"
+  }
+}

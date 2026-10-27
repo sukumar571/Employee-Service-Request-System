@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NOT_FOUND",
+    "message": "Route GET /api/v1/audit-logs not found",
+    "request_id": "e5e6f1f6-3d99-4b36-8dc0-92e9b49429af"
+  }
+}

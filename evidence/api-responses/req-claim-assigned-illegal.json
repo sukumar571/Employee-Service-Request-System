@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INVALID_TRANSITION",
+    "message": "Cannot claim a request in status 'in_progress'",
+    "request_id": "42d73a5c-0d21-4ca1-8cf1-803da623c356"
+  }
+}

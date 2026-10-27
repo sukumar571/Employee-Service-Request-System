@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INVALID_TRANSITION",
+    "message": "Cannot cancel a request in status 'closed'",
+    "request_id": "45d8fd4f-1315-4c0a-8dc4-abf14a094537"
+  }
+}

@@ -5,12 +5,18 @@ import {
   type RequestPriority,
 } from '@esrs/shared';
 import type { Clock } from '../../domain/ports/clock.js';
+import { resolveAuditWrite, type AuditSink, type AuditWrite } from '../../ports/audit.js';
 import type { PolicyPatch, SlaPolicyRecord, SlaPolicyRepository } from './sla.repository.js';
 
 /**
  * In-memory adapter used when `DATABASE_URL` is absent and by unit tests.
  * Seeded from `DEFAULT_SLA_POLICIES` in `@esrs/shared`, which the database seed also uses, so the
  * two can never disagree about the MVP targets (docs/requirements.md §8).
+ *
+ * The optional `audit` sink is how this adapter honours the port's transactional-audit contract: the
+ * rows the caller describes are resolved through the same `resolveAuditWrite()` helper the Postgres
+ * adapter uses. Memory mode has no transaction, so it has no rollback to lose — that guarantee is only
+ * ever proven against the SQL adapter.
  */
 export class InMemorySlaPolicyRepository implements SlaPolicyRepository {
   private readonly rows = new Map<RequestPriority, SlaPolicyRecord>();
@@ -18,6 +24,7 @@ export class InMemorySlaPolicyRepository implements SlaPolicyRepository {
   constructor(
     private readonly clock: Clock,
     seed: readonly SlaPolicyRecord[] = defaultRecords(),
+    private readonly audit?: AuditSink,
   ) {
     for (const record of seed) this.rows.set(record.priority, record);
   }
@@ -32,7 +39,11 @@ export class InMemorySlaPolicyRepository implements SlaPolicyRepository {
     return Promise.resolve(this.rows.get(priority));
   }
 
-  save(priority: RequestPriority, patch: PolicyPatch): Promise<SlaPolicyRecord> {
+  save(
+    priority: RequestPriority,
+    patch: PolicyPatch,
+    audit: readonly AuditWrite[] = [],
+  ): Promise<SlaPolicyRecord> {
     const existing = this.rows.get(priority);
     if (!existing) {
       return Promise.reject(new Error(`Unknown SLA policy '${priority}'`));
@@ -46,6 +57,11 @@ export class InMemorySlaPolicyRepository implements SlaPolicyRepository {
       updated_by: patch.updated_by,
     };
     this.rows.set(priority, updated);
+    for (const write of audit) {
+      void this.audit?.record(
+        resolveAuditWrite(write, { entityId: priority, at: updated.updated_at ?? '' }),
+      );
+    }
     return Promise.resolve(updated);
   }
 }

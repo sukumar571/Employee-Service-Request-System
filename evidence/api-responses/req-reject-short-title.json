@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "title",
+        "message": "Title must be at least 5 characters"
+      }
+    ],
+    "request_id": "0e3baec9-b961-4bb1-a63b-729db3c45163"
+  }
+}

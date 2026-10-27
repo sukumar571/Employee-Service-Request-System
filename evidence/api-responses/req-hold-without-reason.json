@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "reason",
+        "message": "A reason of at least 10 characters is required"
+      }
+    ],
+    "request_id": "41a2f78d-ea43-47c3-95a3-cf274bd80481"
+  }
+}

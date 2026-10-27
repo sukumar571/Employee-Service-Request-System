@@ -8,18 +8,18 @@
     "status_text": "Unauthorized",
     "headers": {
       "content-type": "application/json; charset=utf-8",
-      "x-request-id": "b2abbdf1-98df-4bbe-9ce8-b132f8434991",
+      "x-request-id": "592aae8f-fc40-4b29-8ce4-36800187113c",
       "x-content-type-options": "nosniff",
       "cache-control": null
     },
-    "elapsed_ms": 13,
+    "elapsed_ms": 17,
     "body": {
       "error": {
         "code": "UNAUTHENTICATED",
-        "message": "Authentication is required for this operation (available from Phase 5)",
-        "request_id": "b2abbdf1-98df-4bbe-9ce8-b132f8434991"
+        "message": "Authentication is required for this operation",
+        "request_id": "592aae8f-fc40-4b29-8ce4-36800187113c"
       }
     }
   },
-  "explanation": "expected - identity gate fails closed until Phase 5 ships auth"
+  "explanation": "expected - the identity gate fails closed, so an anonymous read is rejected"
 }

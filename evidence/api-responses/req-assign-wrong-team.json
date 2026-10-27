@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "INVALID_ASSIGNEE",
+    "message": "User '5' belongs to a different team than the request category 'Information Technology'",
+    "request_id": "b84aa042-2e3f-495d-8215-b6793cac7072"
+  }
+}

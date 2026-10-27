@@ -133,6 +133,18 @@ describe('applyTransition — optimistic concurrency (edge case §16.4)', () => 
     }
     expect((failure as DomainRuleError).kind).toBe('VERSION_CONFLICT');
   });
+
+  it('reports a stale precondition ahead of the legality it would otherwise mask', () => {
+    // Claiming a draft is not a legal move either, but the writer’s `If-Match` is stale: the version
+    // is the fact they can act on (re-read, then decide), so it is reported first.
+    let failure: unknown;
+    try {
+      applyTransition(state({ status: 'draft', version: 7 }), claim(AGENT, { expectedVersion: 3 }));
+    } catch (error) {
+      failure = error;
+    }
+    expect((failure as DomainRuleError).kind).toBe('VERSION_CONFLICT');
+  });
 });
 
 describe('helpers', () => {

@@ -17,11 +17,13 @@ Layers & tools:
 
 Coverage gates (CI fail under): `domain/` **90 %** lines+branches · services **70 %** · overall backend 70 %, frontend 60 %. Coverage reported per-package (`npm run test:coverage`).
 
-> **As built (scaffold phase):** the API suites run Supertest against `createApp()` with the
-> in-memory repository + fake clock/audit sink, so they are hermetic and need no database; the
-> Postgres adapters are covered today by the `@esrs/database` contract test (SQL enums/SLA defaults
-> vs `@esrs/shared`) and move to the real-DB row above as soon as `npm run db:up` + `db:migrate`
-> are part of the loop. `npm run evidence` captures the actual output of every layer.
+> **As built:** the API suites run Supertest against `createApp()` with the
+> in-memory repository + fake clock/audit sink, so they are hermetic and need no database; both
+> adapters share one port, so every rule asserted below also holds on the SQL side by construction.
+> The Postgres adapters are covered by the `@esrs/database` contract test (SQL enums/SLA defaults
+> vs `@esrs/shared`) and driven against a live server by `npm run e2e:requests` — a 76-call walk that
+> asserts an expected status per call and captures each response into `evidence/api-responses/`.
+> `npm run evidence` captures the actual output of every layer.
 
 ---
 
@@ -100,6 +102,23 @@ seed factories (`makeUser(role,team)`, `makeRequest(status,…)`).
 | V-03 | requester sees own drafts; agent does not see any `draft` rows |
 | V-04 | deauthorized attachment download (file of request in other team) ⇒ 404 |
 | V-05 | manager sees all; admin sees audit-only extras |
+
+### TC-CMT / TC-HIST (comments, timeline, audit history) — as built
+| ID | Scenario | Expect | Where |
+|---|---|---|---|
+| C-01 | author and instant are server-set | the acting user's id/role snapshot and the clock instant appear; the client supplies neither | `request.http.test.ts` › "stamps the acting author…" |
+| C-02 | length and emptiness | whitespace-only and over-5000 rejected with the field path; exactly the column CHECK's maximum accepted, one more refused | same file, boundary + `it.each` cases |
+| C-03 | protected provenance | a body smuggling `author_id`, `created_at` or a BR-8 flag is a 400 that names the unrecognized key | "will not let the caller supply an author…" |
+| C-04 | write permission on internal notes | employee ⇒ 403 naming the role; agent+ ⇒ 201; the gate is the permission, not the request scope | "gates an internal note on the staff-only permission…" |
+| C-05 | row scope on the thread | another team's ticket is a 404 on read, post and timeline alike | "inherits the parent request's scope…" |
+| C-06 | thread read | oldest first, `total` describes the whole thread while `data` describes the page, internal rows filtered in the query for a requester | `GET /requests/:id/comments` block |
+| C-07 | BR-8 | a comment after `resolved` carries `is_post_closure: true` and does not change status or `version` | "flags a comment left after the request was resolved" |
+| H-01 | merged timeline | events and comments interleave chronologically; the actor and role snapshot appear on every entry; a comment appears **once**, not as marker + row | `GET /requests/:id/timeline` block |
+| H-02 | internal-note privacy across surfaces | an internal note is absent from the requester's thread, timeline **and** `events` trail (its marker follows the comment's visibility); staff see it | "hides an internal note…", "…in the lifecycle trail too" |
+| H-03 | audit ≠ comments | the audit row stores a summary (length, visibility, id) and never the body; audit rows never appear in the timeline | audit-trail block |
+| H-04 | transactional integrity | a failing audit insert undoes the transition, and a failing comment undoes its marker and audit row; success path commits exactly once; nothing is written when the first statement fails | "audit trail — rollback when the transaction fails" |
+| H-05 | history is append-only | `audit_logs`/`request_events` reject UPDATE and DELETE (trigger SQLSTATE 42501) and `comments` reject changes to id/request/author/created_at; no update/delete route exists, and the 404 is captured as evidence | migration 017 + §12 of the API spec |
+| H-06 | read bounds | `?limit` outside 1–200 is a 400 rather than an unbounded read of two append-only tables | "rejects a limit outside the contract…" |
 
 ### TC-TAX / TC-USR
 - deactivating category: open requests still operable; new-request query excludes it.

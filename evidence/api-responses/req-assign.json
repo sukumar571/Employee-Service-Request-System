@@ -1,0 +1,55 @@
+{
+  "data": {
+    "id": "4",
+    "request_number": "REQ-2026-000001",
+    "title": "Laptop will not boot after Tuesday patch",
+    "status": "assigned",
+    "priority": "high",
+    "category": {
+      "id": "1",
+      "name": "Information Technology"
+    },
+    "sub_category": {
+      "id": "1",
+      "name": "Hardware"
+    },
+    "requester": {
+      "id": "1",
+      "full_name": "Demo Employee"
+    },
+    "assignee": {
+      "id": "2",
+      "full_name": "Demo Agent"
+    },
+    "department": {
+      "id": "1",
+      "name": "Information Technology"
+    },
+    "submitted_at": "2026-10-27T18:37:35.587Z",
+    "created_at": "2026-10-27T18:37:35.659Z",
+    "updated_at": "2026-10-27T18:37:36.574Z",
+    "resolved_at": null,
+    "closed_at": null,
+    "reopen_count": 0,
+    "sla": {
+      "first_response_due_at": "2026-10-28T05:30:00.000Z",
+      "resolution_due_at": "2026-10-30T09:30:00.000Z",
+      "resolution_business_minutes_remaining": 1440,
+      "state": "safe"
+    },
+    "version": 1,
+    "allowed_actions": [
+      "assign",
+      "start",
+      "hold",
+      "resolve"
+    ],
+    "description": "My laptop loops at the vendor logo after the patch. I need it working before the client demo on Friday.",
+    "status_reason": "Hardware queue owner this week",
+    "resolution_note": null,
+    "cancelled_at": null,
+    "requester_inactive": false,
+    "reopened_from": null,
+    "can_comment": true
+  }
+}

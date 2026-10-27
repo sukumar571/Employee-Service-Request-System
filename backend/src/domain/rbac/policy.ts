@@ -21,10 +21,16 @@ export const RBAC_ACTIONS = [
   'request.read.own',
   'request.read.team',
   'request.read.all',
+  'request.update',
   'request.transition',
   'request.cancel',
   'request.assign',
   'request.claim',
+  'request.resolve',
+  'request.close',
+  'request.reopen',
+  'request.events.read',
+  'comment.read',
   'comment.create',
   'comment.internal',
   'attachment.download',
@@ -51,10 +57,21 @@ export const PERMISSIONS: Record<RbacAction, readonly UserRole[]> = {
   'request.read.own': EVERYONE,
   'request.read.team': ALL_STAFF,
   'request.read.all': MANAGER_AND_ABOVE,
+  // Route-level gate only: "is this actor ever allowed to edit a request". Object-level rules
+  // (own draft, protected-field rejection) are applied by RequestService, exactly as for cancel.
+  'request.update': EVERYONE,
   'request.transition': ALL_STAFF,
   'request.cancel': EVERYONE,
   'request.assign': MANAGER_AND_ABOVE,
   'request.claim': ALL_STAFF,
+  'request.resolve': ALL_STAFF,
+  'request.close': EVERYONE,
+  'request.reopen': EVERYONE,
+  'request.events.read': EVERYONE,
+  // Reading a thread is a visibility-filtered read of rows the caller's request scope already covers;
+  // `comment.internal` additionally gates *writing* an internal note, and `canSeeInternalNotes()`
+  // gates reading one (AC-5).
+  'comment.read': EVERYONE,
   'comment.create': EVERYONE,
   'comment.internal': ALL_STAFF,
   'attachment.download': EVERYONE,

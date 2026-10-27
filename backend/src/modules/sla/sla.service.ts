@@ -18,7 +18,7 @@ import {
   toWindow,
 } from '../../domain/sla/businessHours.js';
 import type { RbacActor } from '../../domain/rbac/policy.js';
-import type { AuditSink } from '../../ports/audit.js';
+import type { AuditWrite } from '../../ports/audit.js';
 import type { SlaPolicyRecord, SlaPolicyRepository } from './sla.repository.js';
 
 /**
@@ -40,7 +40,6 @@ export interface TrackerTimes {
 export interface SlaServiceDependencies {
   readonly repository: SlaPolicyRepository;
   readonly clock: Clock;
-  readonly audit: AuditSink;
 }
 
 export class SlaService {
@@ -79,29 +78,38 @@ export class SlaService {
       });
     }
 
-    const updated = await this.deps.repository.save(priority, {
-      first_response_minutes: body.first_response_minutes,
-      resolution_minutes: body.resolution_minutes,
-      updated_by: actor.userId,
-    });
+    // The audit row travels with the write instead of being recorded after it: on Postgres the policy
+    // `UPDATE` and this `audit_logs` insert share one transaction, so a manager cannot move a target
+    // without the trail, and a trail row cannot describe a change that did not land.
+    const audit: AuditWrite[] = [
+      () => ({
+        actorId: actor.userId,
+        actorRole: actor.role,
+        action: 'sla_policy.updated',
+        entityType: 'sla_policy',
+        entityId: priority,
+        before: {
+          first_response_minutes: before.first_response_minutes,
+          resolution_minutes: before.resolution_minutes,
+        },
+        after: {
+          first_response_minutes: body.first_response_minutes,
+          resolution_minutes: body.resolution_minutes,
+          reason: body.reason,
+        },
+        requestId,
+      }),
+    ];
 
-    await this.deps.audit.record({
-      actorId: actor.userId,
-      actorRole: actor.role,
-      action: 'sla_policy.updated',
-      entityType: 'sla_policy',
-      entityId: priority,
-      before: {
-        first_response_minutes: before.first_response_minutes,
-        resolution_minutes: before.resolution_minutes,
+    const updated = await this.deps.repository.save(
+      priority,
+      {
+        first_response_minutes: body.first_response_minutes,
+        resolution_minutes: body.resolution_minutes,
+        updated_by: actor.userId,
       },
-      after: {
-        first_response_minutes: updated.first_response_minutes,
-        resolution_minutes: updated.resolution_minutes,
-        reason: body.reason,
-      },
-      requestId,
-    });
+      audit,
+    );
 
     return toDto(updated);
   }

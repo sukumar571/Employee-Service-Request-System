@@ -14,7 +14,10 @@ import { createDatabase, type Database } from './db/pool.js';
 import type { RbacActor } from './domain/rbac/policy.js';
 import { FixedClock } from './domain/ports/clock.js';
 import { createSilentLogger } from './lib/logger.js';
-import { InMemorySlaPolicyRepository } from './modules/sla/sla.repository.memory.js';
+import {
+  InMemorySlaPolicyRepository,
+  defaultRecords,
+} from './modules/sla/sla.repository.memory.js';
 import type { SlaPolicyRepository } from './modules/sla/sla.repository.js';
 import { RecordingAuditSink } from './ports/audit.js';
 
@@ -59,7 +62,10 @@ function build(
     database: options.database ?? createDatabase(),
     clock,
     audit,
-    slaRepository: options.policies ?? new InMemorySlaPolicyRepository(clock),
+    // The sink belongs to the repository now: a policy audit row is written by the same operation
+    // that writes the policy, so it can be rolled back with it.
+    slaRepository:
+      options.policies ?? new InMemorySlaPolicyRepository(clock, defaultRecords(), audit),
     identity,
   });
 
@@ -230,11 +236,13 @@ describe('validation at the HTTP boundary', () => {
 describe('centralized error handling', () => {
   it('turns an unknown route into the standard 404 envelope', async () => {
     const { app } = build();
-    const response = await request(app).get(`${API}/requests`).expect(404);
+    // Deliberately outside every mounted prefix: a path under `/requests` or `/sla` reaches the
+    // business identity gate first and is correctly a 401, which is not what this test is about.
+    const response = await request(app).get(`${API}/not-mounted`).expect(404);
     expect(apiErrorBodySchema.parse(response.body)).toMatchObject({
       error: { code: 'NOT_FOUND', request_id: response.headers['x-request-id'] },
     });
-    expect(response.body.error.message).toContain(`${API}/requests`);
+    expect(response.body.error.message).toContain(`${API}/not-mounted`);
   });
 
   it('converts an unexpected dependency failure into a leak-free 500', async () => {

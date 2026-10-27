@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid request payload",
+    "details": [
+      {
+        "path": "status.0",
+        "message": "Invalid option: expected one of \"draft\"|\"submitted\"|\"assigned\"|\"in_progress\"|\"on_hold\"|\"resolved\"|\"closed\"|\"cancelled\""
+      }
+    ],
+    "request_id": "86e3491e-b0fc-4e4c-b3cc-faae2616e7d7"
+  }
+}

@@ -58,10 +58,7 @@ async function makeUser(
   };
 }
 
-async function harness(
-  seed: UserRecord[],
-  options: { loginMax?: number } = {},
-): Promise<Harness> {
+async function harness(seed: UserRecord[], options: { loginMax?: number } = {}): Promise<Harness> {
   const config = loadConfig({
     NODE_ENV: 'test',
     CORS_ORIGINS: 'http://localhost:5173',
@@ -198,7 +195,10 @@ describe('protected routes require a valid access token', () => {
       .query({ id: '999' })
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
-    expect(safeUserSchema.parse(response.body.data)).toMatchObject({ id: '100', email: 'alice@example.com' });
+    expect(safeUserSchema.parse(response.body.data)).toMatchObject({
+      id: '100',
+      email: 'alice@example.com',
+    });
   });
 });
 
@@ -209,16 +209,18 @@ describe('RBAC: never trust a client-supplied role', () => {
     const login = await loginAs(app, 'agent@example.com').expect(200);
     const token = login.body.data.access_token as string;
 
-    await request(app)
-      .get(`${API}/users`)
-      .set('Authorization', `Bearer ${token}`)
-      .expect(403);
+    await request(app).get(`${API}/users`).set('Authorization', `Bearer ${token}`).expect(403);
 
     // Asserting an admin role in the body does not change the outcome: identity is from the token.
     await request(app)
       .post(`${API}/users`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ email: 'evil@example.com', full_name: 'Evil Admin', role: 'admin', initial_password: PW })
+      .send({
+        email: 'evil@example.com',
+        full_name: 'Evil Admin',
+        role: 'admin',
+        initial_password: PW,
+      })
       .expect(403);
   });
 
@@ -231,7 +233,12 @@ describe('RBAC: never trust a client-supplied role', () => {
     const created = await request(app)
       .post(`${API}/users`)
       .set('Authorization', `Bearer ${token}`)
-      .send({ email: 'newbie@example.com', full_name: 'New Bie', role: 'employee', initial_password: PW })
+      .send({
+        email: 'newbie@example.com',
+        full_name: 'New Bie',
+        role: 'employee',
+        initial_password: PW,
+      })
       .expect(201);
     expect(safeUserSchema.parse(created.body.data)).toMatchObject({
       email: 'newbie@example.com',

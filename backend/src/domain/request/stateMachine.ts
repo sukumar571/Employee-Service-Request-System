@@ -70,10 +70,20 @@ export function applyTransition(
     isAssignee: state.assigneeId !== null && state.assigneeId === command.actorId,
   };
 
-  // 1. Legal transition for this status?
+  // 1. Optimistic concurrency (edge case §16.4) is checked first: a failed `If-Match` precondition
+  //    means the writer is judging an action against a state they never saw, so reporting the move as
+  //    illegal would be wrong — the actionable fact is that the row moved under them.
+  if (command.expectedVersion !== undefined && command.expectedVersion !== state.version) {
+    throw new DomainRuleError(
+      'VERSION_CONFLICT',
+      `Expected version ${command.expectedVersion} but the request is at version ${state.version}`,
+    );
+  }
+
+  // 2. Legal transition for this status?
   const rule = transitionFor(state.status, command.action); // throws InvalidTransitionError
 
-  // 2. May THIS actor perform it, given requester/assignee context?
+  // 3. May THIS actor perform it, given requester/assignee context?
   if (!canPerform(state.status, command.action, actor)) {
     throw new DomainRuleError(
       'NOT_PERMITTED',
@@ -81,20 +91,12 @@ export function applyTransition(
     );
   }
 
-  // 3. Mandatory reason (docs/requirements.md BR-5).
+  // 4. Mandatory reason (docs/requirements.md BR-5).
   const reason = command.reason?.trim();
   if (requiresReason(state.status, command.action) && (!reason || reason.length < 10)) {
     throw new DomainRuleError(
       'REASON_REQUIRED',
       `A reason of at least 10 characters is required to ${command.action} this request`,
-    );
-  }
-
-  // 4. Optimistic concurrency (edge case §16.4): stale writers are rejected, last-write never wins.
-  if (command.expectedVersion !== undefined && command.expectedVersion !== state.version) {
-    throw new DomainRuleError(
-      'VERSION_CONFLICT',
-      `Expected version ${command.expectedVersion} but the request is at version ${state.version}`,
     );
   }
 
